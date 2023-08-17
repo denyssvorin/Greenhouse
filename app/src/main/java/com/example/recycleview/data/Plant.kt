@@ -1,0 +1,15 @@
+package com.example.recycleview.data
+
+import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import kotlinx.android.parcel.Parcelize
+
+@Entity(tableName = "plant_table")
+@Parcelize
+data class Plant(
+    @PrimaryKey(autoGenerate = true) val plantId: Int,
+    val plantImageId: Int,
+    val plantName: String,
+    val plantDescription: String
+) : Parcelable
