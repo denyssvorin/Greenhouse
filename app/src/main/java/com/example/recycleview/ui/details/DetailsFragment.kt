@@ -8,8 +8,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.example.recycleview.R
 import com.example.recycleview.databinding.FragmentDetailsBinding
+import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_details.img_empty
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.collect
 
@@ -23,6 +27,8 @@ class DetailsFragment : Fragment() {
 
     private val viewModel by viewModels<DetailsViewModel>()
 
+    private val args = navArgs<DetailsFragmentArgs>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,18 +41,28 @@ class DetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initUI()
+
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.detailsEvent.collect() { event ->
                 when (event) {
                     is DetailsViewModel.DetailsEvent.NavigateToEditScreen -> {
-                        val action = DetailsFragmentDirections.actionDetailsFragmentToEditFragment(
-                            event.plant, event.plant.plantName
-                        )
+                        val action = DetailsFragmentDirections.actionDetailsFragmentToEditFragment()
                         findNavController().navigate(action)
                     }
                 }
             }
         }
+    }
+
+    private fun initUI() {
+        Picasso.with(requireContext())
+            .load(args.value.plant.plantImagePath)
+            .error(R.drawable.ic_error_24)
+            .into(img_empty)
+
+        binding.tvTitle.text = args.value.plant.plantName
+        binding.tvContent.text = args.value.plant.plantDescription
     }
 
     override fun onDestroyView() {

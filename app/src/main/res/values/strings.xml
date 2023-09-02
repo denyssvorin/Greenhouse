@@ -8,4 +8,11 @@
     <string name="open">Open</string>
     <string name="close">Close</string>
     <string name="create">Create</string>
+    <string name="home">Home</string>
+    <string name="details">Details</string>
+    <string name="edit">Edit</string>
+    <string name="add_from_gallery">Add from gallery</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="OK">OK</string>
 </resources>

@@ -1,14 +1,32 @@
 package com.example.recycleview.ui.home
 
+import android.content.ContentUris
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.recycleview.R
 import com.example.recycleview.data.Plant
 import com.example.recycleview.databinding.PlantItemBinding
+import com.example.recycleview.ui.home.additional.SharedPhotoEntity
+import com.squareup.picasso.Picasso
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 
-class PlantAdapter(private val listener: OnPlantClickListener) :
+
+class PlantAdapter(
+    private val listener: OnPlantClickListener,
+    private val applicationContext: Context?,
+    private val viewModel: HomeViewModel
+) :
     ListAdapter<Plant, PlantAdapter.PlantHolder>(DiffPlantCallback()) {
 
     inner class PlantHolder(private val binding: PlantItemBinding) :
@@ -26,8 +44,19 @@ class PlantAdapter(private val listener: OnPlantClickListener) :
         }
 
         fun bind(plant: Plant) {
+//            val photo = currentList[position]
+
+            // Завантажуємо фотографію за contentUri
+            val contentUri = Uri.parse(plant.plantImagePath)
+            viewModel.loadPhotoByContentUri(contentUri)
+            val loadedPhoto = viewModel.loadedPhoto.value
+
             binding.apply {
-                img.setImageResource(plant.plantImageId)
+                Picasso.with(applicationContext)
+                    .load(loadedPhoto)
+                    .error(R.drawable.ic_error_24)
+                    .into(img)
+
                 tvTitle.text = plant.plantName
                 itemView.setOnClickListener {
                     listener.onPlantClick(plant)

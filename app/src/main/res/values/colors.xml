@@ -10,5 +10,6 @@
     <color name="green">#009E60</color>
     <color name="green1">#9FE2BF</color>
     <color name="green2">#96d6b5</color>
-    <color name="bottomColor">#506F5F</color>
+    <color name="gray_green">#506F5F</color>
+    <color name="light_gray">#F8F8F8</color>
 </resources>

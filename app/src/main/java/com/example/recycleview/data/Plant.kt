@@ -8,8 +8,8 @@ import kotlinx.android.parcel.Parcelize
 @Entity(tableName = "plant_table")
 @Parcelize
 data class Plant(
-    @PrimaryKey(autoGenerate = true) val plantId: Int,
-    val plantImageId: Int,
-    val plantName: String,
-    val plantDescription: String
+    @PrimaryKey(autoGenerate = true) val plantId: Int = 0,
+    val plantImagePath: String,
+    val plantName: String = "plant_name",
+    val plantDescription: String = "plant_description"
 ) : Parcelable
