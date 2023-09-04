@@ -39,11 +39,16 @@ class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
     private val binding get() = _binding!!
     private val viewModel by viewModels<HomeViewModel>()
 
-    private val plantAdapter: PlantAdapter by lazy { PlantAdapter(this, this.activity?.applicationContext) }
+    private val plantAdapter: PlantAdapter by lazy {
+        PlantAdapter(
+            this,
+            this.activity?.applicationContext,
+            viewModel
+        )
+    }
 
     private lateinit var searchView: SearchView
     private lateinit var searchViewIcon: MenuItem
-
 
 
     override fun onCreateView(

@@ -18,10 +18,10 @@ import com.example.recycleview.databinding.PlantItemBinding
 import com.squareup.picasso.Picasso
 import java.io.File
 
-
 class PlantAdapter(
     private val listener: OnPlantClickListener,
-    private val applicationContext: Context?
+    private val applicationContext: Context?,
+    private val viewModel: HomeViewModel
 ) :
     ListAdapter<Plant, PlantAdapter.PlantHolder>(DiffPlantCallback()) {
 
@@ -42,23 +42,29 @@ class PlantAdapter(
         fun bind(plant: Plant) {
             binding.apply {
 
-                Picasso.with(applicationContext)
-                    .load(MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                    .error(R.drawable.ic_error_24)
-                    .into(img)
+                // Завантажуємо фотографію за contentUri
+                val contentUri = Uri.parse(plant.plantImagePath)
+                viewModel.loadPhotoByContentUri(contentUri)
+                val loadedPhoto = viewModel.loadedPhoto.value
 
-                tvTitle.text = plant.plantName
-                itemView.setOnClickListener {
-                    listener.onPlantClick(plant)
+                binding.apply {
+                    Picasso.with(applicationContext)
+                        .load(loadedPhoto)
+                        .error(R.drawable.ic_error_24)
+                        .into(img)
+                    tvTitle.text = plant.plantName
+                    itemView.setOnClickListener {
+                        listener.onPlantClick(plant)
+                    }
+
                 }
-
-
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlantHolder {
-        val binding = PlantItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            PlantItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return PlantHolder(binding)
     }
 
