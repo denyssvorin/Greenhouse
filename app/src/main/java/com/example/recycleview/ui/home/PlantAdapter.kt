@@ -2,10 +2,10 @@ package com.example.recycleview.ui.home
 
 import android.content.ContentUris
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.net.toUri
@@ -15,17 +15,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.recycleview.R
 import com.example.recycleview.data.Plant
 import com.example.recycleview.databinding.PlantItemBinding
-import com.example.recycleview.ui.home.additional.SharedPhotoEntity
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
+import java.io.File
 
 
 class PlantAdapter(
     private val listener: OnPlantClickListener,
-    private val applicationContext: Context?,
-    private val viewModel: HomeViewModel
+    private val applicationContext: Context?
 ) :
     ListAdapter<Plant, PlantAdapter.PlantHolder>(DiffPlantCallback()) {
 
@@ -44,16 +40,10 @@ class PlantAdapter(
         }
 
         fun bind(plant: Plant) {
-//            val photo = currentList[position]
-
-            // Завантажуємо фотографію за contentUri
-            val contentUri = Uri.parse(plant.plantImagePath)
-            viewModel.loadPhotoByContentUri(contentUri)
-            val loadedPhoto = viewModel.loadedPhoto.value
-
             binding.apply {
+
                 Picasso.with(applicationContext)
-                    .load(loadedPhoto)
+                    .load(MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                     .error(R.drawable.ic_error_24)
                     .into(img)
 
@@ -61,6 +51,8 @@ class PlantAdapter(
                 itemView.setOnClickListener {
                     listener.onPlantClick(plant)
                 }
+
+
             }
         }
     }

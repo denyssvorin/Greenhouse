@@ -11,7 +11,6 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import com.example.recycleview.R
 import com.example.recycleview.data.Plant
 import com.example.recycleview.databinding.ActivityMainBinding
@@ -57,7 +56,8 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_container) as NavHostFragment
         navController = navHostFragment.findNavController()
         setSupportActionBar(toolbar)
-        toolbar.setupWithNavController(navController, drawerLayout)
+        setupActionBarWithNavController(navController, drawerLayout)
+
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (toggle.onOptionsItemSelected(item)) return true

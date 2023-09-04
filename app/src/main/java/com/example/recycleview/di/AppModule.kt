@@ -3,7 +3,6 @@ package com.example.recycleview.di
 import android.app.Application
 import androidx.room.Room
 import com.example.recycleview.data.PlantDatabase
-import com.example.recycleview.repo.PlantRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,12 +30,6 @@ object AppModule {
     @Provides
     @Singleton
     fun provideApplicationScope() = CoroutineScope(SupervisorJob())
-
-    @Provides
-    @Singleton
-    fun providePlantRepository(context: Application) : PlantRepository {
-        return PlantRepository(context)
-    }
 
 
 }
