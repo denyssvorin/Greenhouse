@@ -93,6 +93,7 @@ class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
 //                loadPhotosFromStorageIntoRecyclerView()
             } else {
                 Toast.makeText(requireContext(), "Can't read files without permission.", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "Can't read files without permission1.", Toast.LENGTH_LONG).show()
             }
         }
         updateOrRequestPermissions()
