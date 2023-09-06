@@ -1,26 +1,31 @@
 package com.example.recycleview.ui.home
 
+import android.app.Activity
 import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import android.util.Size
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.net.toUri
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.recycleview.R
 import com.example.recycleview.data.Plant
 import com.example.recycleview.databinding.PlantItemBinding
+import com.example.recycleview.ui.home.additional.toPlant
 import com.squareup.picasso.Picasso
 import java.io.File
 
 class PlantAdapter(
     private val listener: OnPlantClickListener,
-    private val applicationContext: Context?,
+    private val applicationContext: Activity?,
     private val viewModel: HomeViewModel
 ) :
     ListAdapter<Plant, PlantAdapter.PlantHolder>(DiffPlantCallback()) {
@@ -42,22 +47,46 @@ class PlantAdapter(
         fun bind(plant: Plant) {
             binding.apply {
 
-                // Завантажуємо фотографію за contentUri
                 val contentUri = Uri.parse(plant.plantImagePath)
-                viewModel.loadPhotoByContentUri(contentUri)
-                val loadedPhoto = viewModel.loadedPhoto.value
+//                viewModel.loadedPhoto.observe(applicationContext as LifecycleOwner) { loadedPhoto ->
+//                    loadedPhoto?.let {
+//                        Picasso.with(applicationContext)
+//                            .load(loadedPhoto.contentUri)
+//                            .placeholder(R.drawable.plant_1573_4)
+//                            .error(R.drawable.ic_error_24)
+//                            .into(img)
+//                    }
+//                }
 
-                binding.apply {
-                    Picasso.with(applicationContext)
-                        .load(loadedPhoto)
-                        .error(R.drawable.ic_error_24)
-                        .into(img)
-                    tvTitle.text = plant.plantName
-                    itemView.setOnClickListener {
-                        listener.onPlantClick(plant)
+                viewModel.loadedPhoto1.observe(applicationContext as LifecycleOwner) { loadedPhotoList ->
+                    loadedPhotoList?.let {
+                        val position = absoluteAdapterPosition
+                        if (position != RecyclerView.NO_POSITION) {
+
+                            val newList = loadedPhotoList.filter {
+                                it?.contentUri.toString() == plant.plantImagePath
+                            }
+//                            Log.d("TAG", "bind: newList: $newList")
+//                            val item = newList[position]
+
+                            val itemUri = loadedPhotoList[position]?.contentUri
+                            Picasso.with(applicationContext)
+                                .load(itemUri)
+                                .placeholder(R.drawable.plant_1573_4)
+                                .error(R.drawable.ic_error_24)
+                                .into(img)
+
+                        }
                     }
-
                 }
+
+                tvTitle.text = plant.plantName
+                itemView.setOnClickListener {
+                    listener.onPlantClick(plant)
+                }
+
+//                viewModel.loadPhotoByContentUri(contentUri)
+                viewModel.loadPhotoByContentUri1(contentUri)
             }
         }
     }
