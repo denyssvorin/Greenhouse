@@ -1,6 +1,5 @@
 package com.example.recycleview.ui.edit
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,11 +12,10 @@ import androidx.navigation.fragment.findNavController
 import com.example.recycleview.R
 import com.example.recycleview.data.Plant
 import com.example.recycleview.databinding.FragmentEditPlantBinding
-import com.example.recycleview.ui.home.HomeFragmentDirections
-import com.example.recycleview.ui.home.HomeViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class EditPlantFragment : Fragment() {
@@ -27,14 +25,18 @@ class EditPlantFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel by viewModels<EditPlantViewModel>()
-    private lateinit var imageUri: Uri
-
+    private lateinit var imageUri: String
 
     private val pickImageRequest = registerForActivityResult(
-        ActivityResultContracts.GetContent()) { uri ->
+        ActivityResultContracts.GetContent()
+    ) { uri ->
         uri?.let { imageUri ->
 
-            this.imageUri = imageUri
+            val newUri = imageUri.lastPathSegment
+
+            lifecycleScope.launch {
+                viewModel.mapPhotos(newUri.toString())
+            }
 
             Picasso.with(requireContext())
                 .load(imageUri)
@@ -42,6 +44,7 @@ class EditPlantFragment : Fragment() {
                 .into(binding.imageViewPlant)
         }
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,16 +59,6 @@ class EditPlantFragment : Fragment() {
 
         initUI()
 
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.editPlantEvent.collect() { event ->
-                when (event) {
-                    EditPlantViewModel.EditPlantEvent.NavigateToHomeScreen -> {
-                        val action = EditPlantFragmentDirections.actionEditFragmentToHomeFragment()
-                        findNavController().navigate(action)
-                    }
-                }
-            }
-        }
     }
 
     private fun initUI() {
@@ -86,6 +79,22 @@ class EditPlantFragment : Fragment() {
                 } else {
                     Snackbar.make(it, "Plant name must be filled", Snackbar.LENGTH_LONG).show()
                 }
+            }
+
+            viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+                viewModel.editPlantEvent.collect() { event ->
+                    when (event) {
+                        EditPlantViewModel.EditPlantEvent.NavigateToHomeScreen -> {
+                            val action =
+                                EditPlantFragmentDirections.actionEditFragmentToHomeFragment()
+                            findNavController().navigate(action)
+                        }
+                    }
+                }
+            }
+
+            viewModel.mappedPhotos.observe(viewLifecycleOwner) { finalPhotoUri ->
+                this@EditPlantFragment.imageUri = finalPhotoUri
             }
         }
     }

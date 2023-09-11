@@ -1,15 +1,12 @@
 package com.example.recycleview.ui.home
 
 import android.Manifest
-import android.content.ContentUris
+import android.app.Application
 import android.content.pm.PackageManager
 import android.database.ContentObserver
-import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -17,13 +14,11 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -34,17 +29,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.recycleview.R
 import com.example.recycleview.data.Plant
-import com.example.recycleview.databinding.ActivityMainBinding
 import com.example.recycleview.databinding.FragmentHomeBinding
-import com.example.recycleview.ui.home.additional.SharedPhotoEntity
 import com.example.recycleview.utils.onQueryTextChanged
-import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_home.rcView
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
@@ -58,8 +45,7 @@ class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
     private val plantAdapter: PlantAdapter by lazy {
         PlantAdapter(
             this,
-            this.activity,
-            viewModel
+            context?.applicationContext as Application
         )
     }
 
@@ -174,6 +160,7 @@ class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
             viewModel.plants.observe(viewLifecycleOwner) {
                 plantAdapter.submitList(it)
             }
+
             viewLifecycleOwner.lifecycleScope.launchWhenStarted {
                 viewModel.plantEvent.collect() { event ->
                     when (event) {

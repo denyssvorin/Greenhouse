@@ -3,6 +3,7 @@ package com.example.recycleview.di
 import android.app.Application
 import androidx.room.Room
 import com.example.recycleview.data.PlantDatabase
+import com.example.recycleview.repo.PlantRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +21,6 @@ object AppModule {
     @Singleton
     fun provideDatabase(app: Application) =
         Room.databaseBuilder(app, PlantDatabase::class.java, "plant_database")
-        .fallbackToDestructiveMigration()
         .build()
 
     @Provides
@@ -31,6 +31,10 @@ object AppModule {
     @Singleton
     fun provideApplicationScope() = CoroutineScope(SupervisorJob())
 
+    @Provides
+    fun provideRepo(context: Application):  PlantRepository {
+        return PlantRepository(context)
+    }
 
 }
 @Retention(AnnotationRetention.RUNTIME)

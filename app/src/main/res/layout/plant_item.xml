@@ -30,7 +30,7 @@
                 android:id="@+id/img"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                tools:srcCompat="@drawable/plant1" />
+                tools:srcCompat="@drawable/plant_1573_4" />
 
             <TextView
                 android:id="@+id/tvTitle"
