@@ -1,14 +1,20 @@
 package com.example.recycleview.ui.home
 
+import android.app.Application
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.recycleview.R
 import com.example.recycleview.data.Plant
 import com.example.recycleview.databinding.PlantItemBinding
+import com.squareup.picasso.Picasso
 
-class PlantAdapter(private val listener: OnPlantClickListener) :
+class PlantAdapter(
+    private val listener: OnPlantClickListener,
+    private val applicationContext: Application
+) :
     ListAdapter<Plant, PlantAdapter.PlantHolder>(DiffPlantCallback()) {
 
     inner class PlantHolder(private val binding: PlantItemBinding) :
@@ -27,7 +33,13 @@ class PlantAdapter(private val listener: OnPlantClickListener) :
 
         fun bind(plant: Plant) {
             binding.apply {
-                img.setImageResource(plant.plantImageId)
+                Picasso.with(applicationContext)
+                    .load(plant.plantImagePath)
+                    .centerCrop()
+                    .resize(1000, 1000)
+                    .placeholder(R.drawable.plant_1573_4)
+                    .error(R.drawable.ic_error_24)
+                    .into(img)
                 tvTitle.text = plant.plantName
                 itemView.setOnClickListener {
                     listener.onPlantClick(plant)
@@ -37,7 +49,8 @@ class PlantAdapter(private val listener: OnPlantClickListener) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlantHolder {
-        val binding = PlantItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            PlantItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return PlantHolder(binding)
     }
 

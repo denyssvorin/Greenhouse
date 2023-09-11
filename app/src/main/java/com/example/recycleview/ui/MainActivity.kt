@@ -1,23 +1,27 @@
 package com.example.recycleview.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import com.example.recycleview.R
 import com.example.recycleview.data.Plant
 import com.example.recycleview.databinding.ActivityMainBinding
+import com.example.recycleview.ui.home.HomeFragment
 import com.example.recycleview.ui.home.PlantAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), PlantAdapter.OnPlantClickListener {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
@@ -48,25 +52,36 @@ class MainActivity : AppCompatActivity(), PlantAdapter.OnPlantClickListener {
             true
         }
 
-        fab.setOnClickListener {
-            // TODO: navigate to editPlant screen
-        }
-
+        onBackPressedDispatcher.addCallback(this@MainActivity, onBackPressedCallback)
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_container) as NavHostFragment
         navController = navHostFragment.findNavController()
         setSupportActionBar(toolbar)
-        setupActionBarWithNavController(navController, drawerLayout)
+        toolbar.setupWithNavController(navController, drawerLayout)
 
     }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (toggle.onOptionsItemSelected(item)) return true
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onPlantClick(plant: Plant) {}
 
     override fun onSupportNavigateUp(): Boolean =
         navController.navigateUp() || super.onSupportNavigateUp()
+
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            // handle system back press from singleSongActivity
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_container) as NavHostFragment
+            val innerFragment = navHostFragment.childFragmentManager.fragments.firstOrNull()
+            onSupportNavigateUp()
+
+            // handle back press to exit from app
+            val backStackCount = supportFragmentManager.backStackEntryCount
+            if (backStackCount == 0 && innerFragment is HomeFragment) {
+                finish()
+            }
+        }
+    }
 }
