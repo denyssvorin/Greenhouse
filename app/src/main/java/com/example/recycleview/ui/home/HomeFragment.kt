@@ -24,12 +24,14 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.recycleview.R
 import com.example.recycleview.data.Plant
 import com.example.recycleview.databinding.FragmentHomeBinding
+import com.example.recycleview.ui.SharedTitleViewModel
 import com.example.recycleview.utils.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -79,15 +81,16 @@ class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
 
         permissionsLauncher =
             registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-                readPermissionGranted =
+                readPermissionGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     permissions[Manifest.permission.READ_MEDIA_IMAGES] ?: readPermissionGranted
+                } else {
+                    permissions[Manifest.permission.READ_EXTERNAL_STORAGE] ?: readPermissionGranted
+                }
                 writePermissionGranted = permissions[Manifest.permission.WRITE_EXTERNAL_STORAGE]
                     ?: writePermissionGranted
 
                 if (readPermissionGranted) {
                     initRecView()
-
-
                 } else {
                     Toast.makeText(
                         requireContext(),
@@ -126,7 +129,7 @@ class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
         } else {
             ContextCompat.checkSelfPermission(
                 requireContext(),
-                Manifest.permission.READ_MEDIA_IMAGES
+                Manifest.permission.READ_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_GRANTED
         }
 
@@ -141,7 +144,7 @@ class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
         writePermissionGranted = hasWritePermission || minSdk29
 
         val permissionsToRequest = mutableListOf<String>()
-        if(!writePermissionGranted) {
+        if (!writePermissionGranted) {
             permissionsToRequest.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
         if (!readPermissionGranted) {
@@ -155,6 +158,7 @@ class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
 
     private fun initUI() {
         binding.apply {
+
             initRecView()
 
             viewModel.plants.observe(viewLifecycleOwner) {
@@ -166,13 +170,19 @@ class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
                     when (event) {
                         is HomeViewModel.HomeEvent.NavigateToDetailsScreen -> {
                             val action = HomeFragmentDirections.actionHomeFragmentToDetailsFragment(
-                                event.plant, event.plant.plantName
+                                event.plant.plantId
                             )
+                            val sharedTitleViewModel = ViewModelProvider(requireActivity()).get(
+                                SharedTitleViewModel::class.java
+                            )
+                            sharedTitleViewModel.title.value = event.plant.plantName
+
                             findNavController().navigate(action)
                         }
 
                         is HomeViewModel.HomeEvent.NavigateToEditScreen -> {
-                            val action = HomeFragmentDirections.actionHomeFragmentToEditFragment()
+                            val action =
+                                HomeFragmentDirections.actionHomeFragmentToEditFragment(Plant(plantImagePath = "empty"))
                             findNavController().navigate(action)
                         }
                     }

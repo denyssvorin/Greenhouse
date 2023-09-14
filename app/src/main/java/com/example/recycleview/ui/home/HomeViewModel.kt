@@ -17,7 +17,6 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val plantDao: PlantDao,
-    private val repository: PlantRepository
 ): ViewModel() {
 
     val searchQuery = MutableStateFlow("")
