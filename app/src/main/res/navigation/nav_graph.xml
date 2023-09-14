@@ -31,14 +31,10 @@
         android:id="@+id/detailsFragment"
         android:name="com.example.recycleview.ui.details.DetailsFragment"
         tools:layout="@layout/fragment_details">
-<!--        android:label="{plantName}"-->
 
         <argument
             android:name="plantId"
             app:argType="integer" />
-<!--        <argument-->
-<!--            android:name="plantName"-->
-<!--            app:argType="string" />-->
         <action
             android:id="@+id/action_detailsFragment_to_editFragment"
             app:destination="@id/editFragment"
@@ -67,7 +63,6 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_exit_anim"/>
-
     </fragment>
 
 </navigation>
