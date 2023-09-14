@@ -30,31 +30,44 @@
     <fragment
         android:id="@+id/detailsFragment"
         android:name="com.example.recycleview.ui.details.DetailsFragment"
-        android:label="{plantName}"
         tools:layout="@layout/fragment_details">
+<!--        android:label="{plantName}"-->
+
         <argument
-            android:name="plant"
-            app:argType="com.example.recycleview.data.Plant" />
-        <argument
-            android:name="plantName"
-            app:argType="string" />
+            android:name="plantId"
+            app:argType="integer" />
+<!--        <argument-->
+<!--            android:name="plantName"-->
+<!--            app:argType="string" />-->
         <action
             android:id="@+id/action_detailsFragment_to_editFragment"
             app:destination="@id/editFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_exit_anim" />
+            app:popExitAnim="@anim/nav_default_exit_anim">
+        </action>
     </fragment>
 
     <fragment
         android:id="@+id/editFragment"
         android:name="com.example.recycleview.ui.edit.EditPlantFragment"
-        android:label="fragment_edit_plant"
+        android:label="@string/edit"
         tools:layout="@layout/fragment_edit_plant">
         <action
             android:id="@+id/action_editFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <argument
+            android:name="plant"
+            app:argType="com.example.recycleview.data.Plant" />
+        <action
+            android:id="@+id/action_editFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_exit_anim"/>
+
     </fragment>
 
 </navigation>

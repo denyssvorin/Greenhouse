@@ -31,10 +31,16 @@ class EditPlantViewModel @Inject constructor(
         _mappedPhotos.postValue(photos)
     }
 
+    fun updatePlant(plant: Plant) = viewModelScope.launch {
+        plantDao.updatePlant(plant)
+//        editPlantEventChannel.send(EditPlantEvent.NavigateToDetailsScreen)
+    }
+
     private val editPlantEventChannel = Channel<EditPlantEvent>()
     val editPlantEvent = editPlantEventChannel.receiveAsFlow()
 
     sealed class EditPlantEvent {
         object NavigateToHomeScreen : EditPlantEvent()
+//        object NavigateToDetailsScreen : EditPlantEvent()
     }
 }
