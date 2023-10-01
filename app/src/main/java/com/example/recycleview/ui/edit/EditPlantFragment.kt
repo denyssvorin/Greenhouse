@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.res.ResourcesCompat.getDrawable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -32,7 +33,6 @@ class EditPlantFragment : Fragment() {
     private val viewModel by viewModels<EditPlantViewModel>()
     private val args by navArgs<EditPlantFragmentArgs>()
 
-    //    private val args = requireArguments().getBundle("plant_edit")
     private lateinit var imageUri: String
 
     private val pickImageRequest = registerForActivityResult(
@@ -71,6 +71,7 @@ class EditPlantFragment : Fragment() {
 
     private fun initUI() {
         binding.apply {
+            imageUri = R.drawable.plant_placeholder_coloured.toString()
             // check for args from HomeFragment or DetailsFragment
             // "empty" - from HomeFragment
             if (args.plant.plantImagePath != "empty") {

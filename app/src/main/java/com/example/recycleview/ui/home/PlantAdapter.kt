@@ -1,6 +1,8 @@
 package com.example.recycleview.ui.home
 
 import android.app.Application
+import android.content.res.Resources.Theme
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -32,9 +34,18 @@ class PlantAdapter(
         }
 
         fun bind(plant: Plant) {
+            val photoUriString = plant.plantImagePath
+            // check if photo is from gallery or unselected
+            val photoUri: Uri = if (photoUriString.startsWith("content://")) {
+                // photo is from gallery
+                Uri.parse(photoUriString)
+            } else {
+                // parse default resource
+                Uri.parse("android.resource://com.example.recycleview/$photoUriString")
+            }
             binding.apply {
                 Picasso.with(applicationContext)
-                    .load(plant.plantImagePath)
+                    .load(photoUri)
                     .centerCrop()
                     .resize(1000, 1000)
                     .placeholder(R.drawable.plant_1573_4)
