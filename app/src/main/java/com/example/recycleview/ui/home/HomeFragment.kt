@@ -7,7 +7,6 @@ import android.database.ContentObserver
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -22,6 +21,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -34,6 +34,7 @@ import com.example.recycleview.databinding.FragmentHomeBinding
 import com.example.recycleview.ui.SharedTitleViewModel
 import com.example.recycleview.utils.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
@@ -161,8 +162,10 @@ class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
 
             initRecView()
 
-            viewModel.plants.observe(viewLifecycleOwner) {
-                plantAdapter.submitList(it)
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewModel.plantPagingFlow.collect { plantPagingData ->
+                    plantAdapter.submitData(plantPagingData)
+                }
             }
 
             viewLifecycleOwner.lifecycleScope.launchWhenStarted {
@@ -182,7 +185,11 @@ class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
 
                         is HomeViewModel.HomeEvent.NavigateToEditScreen -> {
                             val action =
-                                HomeFragmentDirections.actionHomeFragmentToEditFragment(Plant(plantImagePath = "empty"))
+                                HomeFragmentDirections.actionHomeFragmentToEditFragment(
+                                    Plant(
+                                        plantImagePath = "empty"
+                                    )
+                                )
                             findNavController().navigate(action)
                         }
                     }
@@ -211,9 +218,11 @@ class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
                 searchView = searchViewIcon.actionView as SearchView
 
                 val pendingQuery = viewModel.searchQuery.value
-                if (pendingQuery.isNotEmpty()) {
-                    searchViewIcon.expandActionView()
-                    searchView.setQuery(pendingQuery, false)
+                if (pendingQuery != null) {
+                    if (pendingQuery.isNotEmpty()) {
+                        searchViewIcon.expandActionView()
+                        searchView.setQuery(pendingQuery, false)
+                    }
                 }
                 searchView.onQueryTextChanged {
                     viewModel.searchQuery.value = it

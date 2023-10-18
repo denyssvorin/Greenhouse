@@ -1,14 +1,16 @@
 package com.example.recycleview.ui.home
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.recycleview.data.Plant
-import com.example.recycleview.data.PlantDao
-import com.example.recycleview.repo.PlantRepository
+import com.example.recycleview.repo.PlantRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -16,15 +18,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val plantDao: PlantDao,
+    private val repository: PlantRepositoryImpl
 ): ViewModel() {
 
-    val searchQuery = MutableStateFlow("")
-
-    private val _plants = searchQuery.flatMapLatest { query ->
-        plantDao.getPlants(query)
-    }
-    val plants = _plants.asLiveData()
+//    val searchQuery = MutableStateFlow("")
+//
+//    private val _plants = searchQuery.flatMapLatest { query ->
+//        plantDao.getPlants(query)
+//    }
+//    val plants = _plants.asLiveData()
 
     fun onPlantSelected(plant: Plant) = viewModelScope.launch {
         plantEventChannel.send(HomeEvent.NavigateToDetailsScreen(plant))
@@ -35,6 +37,13 @@ class HomeViewModel @Inject constructor(
 
     private val plantEventChannel = Channel<HomeEvent>()
     val plantEvent = plantEventChannel.receiveAsFlow()
+
+    val searchQuery = MutableLiveData("")
+
+    val plantPagingFlow: Flow<PagingData<Plant>> = searchQuery.asFlow()
+        .flatMapLatest {
+            repository.getPagingPlants(it)
+        }.cachedIn(viewModelScope)
 
     sealed class HomeEvent {
         data class NavigateToDetailsScreen(val plant: Plant): HomeEvent()

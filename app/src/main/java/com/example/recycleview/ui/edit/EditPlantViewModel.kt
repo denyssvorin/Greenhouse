@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recycleview.data.Plant
 import com.example.recycleview.data.PlantDao
-import com.example.recycleview.repo.PlantRepository
+import com.example.recycleview.repo.PlantRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EditPlantViewModel @Inject constructor(
     private val plantDao: PlantDao,
-    private val repository: PlantRepository,
+    private val repository: PlantRepositoryImpl,
 ) : ViewModel() {
 
     fun savePlant(plant: Plant) = viewModelScope.launch {

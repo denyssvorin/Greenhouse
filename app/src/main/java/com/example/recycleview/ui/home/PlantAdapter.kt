@@ -5,6 +5,7 @@ import android.content.res.Resources.Theme
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -17,7 +18,7 @@ class PlantAdapter(
     private val listener: OnPlantClickListener,
     private val applicationContext: Application
 ) :
-    ListAdapter<Plant, PlantAdapter.PlantHolder>(DiffPlantCallback()) {
+    PagingDataAdapter<Plant, PlantAdapter.PlantHolder>(DiffPlantCallback()) {
 
     inner class PlantHolder(private val binding: PlantItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -27,7 +28,7 @@ class PlantAdapter(
                     val position = absoluteAdapterPosition
                     if (position != RecyclerView.NO_POSITION) {
                         val plant = getItem(position)
-                        listener.onPlantClick(plant)
+                        plant?.let { it1 -> listener.onPlantClick(it1) }
                     }
                 }
             }
@@ -67,7 +68,7 @@ class PlantAdapter(
 
     override fun onBindViewHolder(holder: PlantHolder, position: Int) {
         val currentItem = getItem(position)
-        holder.bind(currentItem)
+        currentItem?.let { holder.bind(it) }
     }
 
     interface OnPlantClickListener {

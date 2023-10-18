@@ -17,7 +17,6 @@ import com.example.recycleview.databinding.FragmentDetailsBinding
 import com.example.recycleview.ui.SharedTitleViewModel
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_details.img_plant_details
 
 @AndroidEntryPoint
 class DetailsFragment : Fragment() {
@@ -60,7 +59,7 @@ class DetailsFragment : Fragment() {
                 Picasso.with(requireContext())
                     .load(plant.plantImagePath)
                     .error(R.drawable.ic_error_24)
-                    .into(img_plant_details)
+                    .into(binding.imgPlantDetails)
 
                 binding.apply {
                     tvTitle.text = plant.plantName
