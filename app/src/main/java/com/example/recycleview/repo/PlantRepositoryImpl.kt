@@ -8,8 +8,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.recycleview.data.Plant
-import com.example.recycleview.data.PlantDao
-import kotlinx.coroutines.CoroutineDispatcher
+import com.example.recycleview.data.PlantDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -17,7 +16,7 @@ import javax.inject.Inject
 
 class PlantRepositoryImpl @Inject constructor(
     private val context: Application,
-    private val dao: PlantDao
+    private val db: PlantDatabase
 ) : PlantRepository {
     override suspend fun mapPhotosFromExternalStorage(imagePath: String): String {
         return withContext(Dispatchers.IO) {
@@ -77,7 +76,7 @@ class PlantRepositoryImpl @Inject constructor(
 
     private suspend fun getPlants(limit: Int, offset: Int, searchQuery: String) : List<Plant> =
         withContext(Dispatchers.IO) {
-            val list = dao.getPlants(limit = limit, offset = offset, searchText = searchQuery)
+            val list = db.plantDao().getPlants(limit = limit, offset = offset, searchText = searchQuery)
             return@withContext list
         }
 
