@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -62,6 +63,8 @@ class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
 
     private lateinit var contentObserver: ContentObserver
 
+    private lateinit var composeView: ComposeView
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,12 +73,21 @@ class HomeFragment : Fragment(), PlantAdapter.OnPlantClickListener {
     ): View? {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         setupToolbar()
-        return binding.root
+//        return binding.root
+        return ComposeView(requireContext()).also {
+            composeView = it
+        }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+//        composeView.setContent {
+//            HomeScreen()
+//        }
 
         initUI()
         initContentObserver()

@@ -15,4 +15,6 @@
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="OK">OK</string>
+    <string name="label">Label</string>
+    <string name="plant">Plant</string>
 </resources>
