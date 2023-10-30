@@ -17,4 +17,7 @@
     <string name="OK">OK</string>
     <string name="label">Label</string>
     <string name="plant">Plant</string>
+    <string name="save">Save</string>
+    <string name="name">Name</string>
+    <string name="main">Main</string>
 </resources>

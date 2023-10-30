@@ -30,13 +30,13 @@ fun Navigation() {
             )
         ) { navBackStackEntry ->
             navBackStackEntry.arguments?.getInt("plant_id")?.let {
-                EditScreen(plantId = it)
+                EditScreen(plantId = it, navController = navController)
             }
         }
         composable(
             route = ScreenNavigation.AddNewPlantScreen.route
         ) {
-            AddNewPlantScreen()
+            AddNewPlantScreen(navController = navController)
         }
         composable(
             route = ScreenNavigation.DetailsScreen.route + "/{plant_id}",
@@ -47,7 +47,7 @@ fun Navigation() {
             )
         ) { navBackStackEntry ->
             navBackStackEntry.arguments?.getInt("plant_id")?.let {
-                DetailsScreen(plantId = it, navController)
+                DetailsScreen(plantId = it, navController = navController)
             }
         }
     }

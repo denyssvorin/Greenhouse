@@ -8,7 +8,10 @@ import com.example.recycleview.data.Plant
 import com.example.recycleview.data.PlantDao
 import com.example.recycleview.repo.PlantRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,15 +36,24 @@ class EditPlantViewModel @Inject constructor(
         }
     }
     fun savePlant(plant: Plant) = viewModelScope.launch {
-        plantDao.insertPlant(plant)
-        editPlantEventChannel.send(EditPlantEvent.NavigateToHomeScreen)
+        coroutineScope {
+            val message = async(Dispatchers.Default) {
+                plantDao.insertPlant(plant)
+            }
+//            val result = message.await()
+        }
+//        editPlantEventChannel.send(EditPlantEvent.NavigateToHomeScreen)
     }
 
     private val _mappedPhotos = MutableLiveData<String>()
     val mappedPhotos: LiveData<String> = _mappedPhotos
+
+    private val _mappedPhotos1 = MutableStateFlow<String?>(null)
+    val mappedPhotos1: StateFlow<String?> = _mappedPhotos1
+
     fun mapPhotos(imagePath: String) = viewModelScope.launch {
         val photos = repository.mapPhotosFromExternalStorage(imagePath)
-        _mappedPhotos.postValue(photos)
+        _mappedPhotos1.value = photos
     }
 
     fun updatePlant(plant: Plant) = viewModelScope.launch {

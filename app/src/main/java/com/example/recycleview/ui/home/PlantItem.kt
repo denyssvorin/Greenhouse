@@ -10,7 +10,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -28,6 +30,7 @@ fun PlantItem(
     Card(
         modifier = Modifier
             .fillMaxSize()
+            .padding(4.dp)
             .clickable {
                 navController.navigate(
                     ScreenNavigation.DetailsScreen.withArgs(
@@ -41,12 +44,16 @@ fun PlantItem(
             GlideImage(
                 model = plant.plantImagePath,
                 contentDescription = "Plant image",
-                modifier = Modifier.size(150.dp)
+                modifier = Modifier.size(150.dp),
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.Center
             )
             Text(
                 text = plant.plantName,
                 Modifier
                     .padding(8.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.sp,
                 letterSpacing = 0.15.sp
