@@ -1,4 +1,4 @@
-package com.example.recycleview.ui.edit
+package com.example.recycleview.ui.add
 
 import android.net.Uri
 import android.widget.Toast
@@ -33,10 +33,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,7 +42,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.bumptech.glide.integration.compose.*
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.recycleview.R
 import com.example.recycleview.data.Plant
 
@@ -55,10 +52,10 @@ import com.example.recycleview.data.Plant
 @Composable
 fun AddNewPlantScreen(
     navController: NavHostController,
-    viewModel: EditPlantViewModel = hiltViewModel()
+    viewModel: AddNewPlantViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val imageUri by viewModel.mappedPhotos1.collectAsState()
+    val imageUri by viewModel.mappedPhotos.collectAsState()
 
     val getContent = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
@@ -71,10 +68,6 @@ fun AddNewPlantScreen(
             viewModel.mapPhotos(newImage)
         }
     }
-
-
-    var newPlantName by rememberSaveable { mutableStateOf("") }
-    var newPlantDescription by rememberSaveable { mutableStateOf("") }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -102,9 +95,9 @@ fun AddNewPlantScreen(
                 onClick = {
                     viewModel.savePlant(
                         plant = Plant(
-                            plantImagePath = imageUri ?: R.drawable.plant_placeholder_coloured.toString(),
-                            plantName = newPlantName,
-                            plantDescription = newPlantDescription
+                            plantImagePath = viewModel.mappedPhotos.value.toString(),
+                            plantName = viewModel.plantName,
+                            plantDescription = viewModel.plantDescription
                         )
                     )
                     Toast.makeText(context, "Saved!", Toast.LENGTH_SHORT).show()
@@ -197,7 +190,7 @@ fun AddNewPlantScreen(
                                     start = 8.dp,
                                     end = 8.dp
                                 ),
-                            value = newPlantName,
+                            value = viewModel.plantName,
                             colors = TextFieldDefaults.textFieldColors(
                                 focusedLabelColor = MaterialTheme.colorScheme.primary,
                                 focusedIndicatorColor = MaterialTheme.colorScheme.primary,
@@ -205,7 +198,7 @@ fun AddNewPlantScreen(
                                 cursorColor = MaterialTheme.colorScheme.primary
                             ),
                             onValueChange = { newValue ->
-                                newPlantName = newValue
+                                viewModel.updatePlantNameTextField(newValue)
                             },
                             label = { Text(stringResource(R.string.name)) },
                             shape = MaterialTheme.shapes.small
@@ -218,7 +211,7 @@ fun AddNewPlantScreen(
                                     end = 8.dp,
                                     bottom = 8.dp
                                 ),
-                            value = newPlantDescription,
+                            value = viewModel.plantDescription,
                             colors = TextFieldDefaults.textFieldColors(
                                 focusedLabelColor = MaterialTheme.colorScheme.primary,
                                 focusedIndicatorColor = MaterialTheme.colorScheme.primary,
@@ -226,7 +219,7 @@ fun AddNewPlantScreen(
                                 cursorColor = MaterialTheme.colorScheme.primary
                             ),
                             onValueChange = { newValue ->
-                                newPlantDescription = newValue
+                                viewModel.updatePlantDescriptionTextField(newValue)
                             },
                             label = { Text(stringResource(R.string.description)) }
                         )
@@ -235,34 +228,4 @@ fun AddNewPlantScreen(
             }
         }
     )
-}
-
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun ImagePickerDemo(viewModel: EditPlantViewModel = hiltViewModel()) {
-    val imageUri = remember { mutableStateOf<Uri?>(null) }
-
-    val getContent = rememberLauncherForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let { imageUri.value = it }
-        // Оновлення зображення у ViewModel, якщо потрібно
-        uri?.toString()?.let { viewModel.mapPhotos(it) }
-    }
-
-    Column {
-        // Button для виклику Activity Result
-        Button(onClick = { getContent.launch("image/*") }) {
-            Text("Вибрати зображення")
-        }
-
-        // Зображення, яке відображається, коли вибрано
-        imageUri.value?.let { uri ->
-            GlideImage(
-                model = uri,
-                contentDescription = null, // Встановіть опис, якщо потрібно
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-    }
 }

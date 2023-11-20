@@ -6,8 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.recycleview.ui.add.AddNewPlantScreen
 import com.example.recycleview.ui.details.DetailsScreen
-import com.example.recycleview.ui.edit.AddNewPlantScreen
 import com.example.recycleview.ui.edit.EditScreen
 import com.example.recycleview.ui.home.HomeScreen
 

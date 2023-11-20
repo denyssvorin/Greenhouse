@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.recycleview.data.Plant
-import com.example.recycleview.repo.PlantRepositoryImpl
+import com.example.recycleview.repo.PlantRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: PlantRepositoryImpl
+    private val repository: PlantRepository
 ): ViewModel() {
 
 //    val searchQuery = MutableStateFlow("")

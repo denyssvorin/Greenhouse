@@ -1,4 +1,4 @@
-package com.example.recycleview.ui.edit
+package com.example.recycleview.ui.add
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,45 +10,26 @@ import com.example.recycleview.data.PlantDao
 import com.example.recycleview.repo.PlantRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class EditPlantViewModel @Inject constructor(
+class AddNewPlantViewModel @Inject constructor(
     private val plantDao: PlantDao,
     private val repository: PlantRepository
 ) : ViewModel() {
 
-    private val _plantImageData = MutableStateFlow("")
-    val plantImageData: StateFlow<String> = _plantImageData.asStateFlow()
+    fun savePlant(plant: Plant) = viewModelScope.launch {
 
-    fun getPlant(id: Int) {
-        if (_plantImageData.value == ""
-            && plantName == ""
-            && plantDescription == ""
-        ) {
-            viewModelScope.launch {
-                val plant = plantDao.getSinglePlant(id).first()
-
-                _plantImageData.value = plant.plantImagePath
-                plantName = plant.plantName
-                plantDescription = plant.plantDescription
-            }
+        withContext(Dispatchers.IO) {
+            plantDao.upsertPlant(plant)
         }
     }
 
-    fun savePlant(plant: Plant) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                plantDao.upsertPlant(plant)
-            }
-        }
-    }
 
     var plantName by mutableStateOf("")
         private set
@@ -67,7 +48,11 @@ class EditPlantViewModel @Inject constructor(
     val mappedPhotos: StateFlow<String?> = _mappedPhotos
 
     fun mapPhotos(imagePath: String) = viewModelScope.launch {
-        val photos = repository.mapPhotosFromExternalStorage(imagePath)
-        _mappedPhotos.value = photos
+        val photos = async {
+            repository.mapPhotosFromExternalStorage(imagePath)
+        }
+
+        val result = photos.await()
+        _mappedPhotos.value = result
     }
 }

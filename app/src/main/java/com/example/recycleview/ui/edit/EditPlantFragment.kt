@@ -6,11 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.res.ResourcesCompat.getDrawable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.recycleview.R
@@ -20,7 +18,6 @@ import com.example.recycleview.ui.SharedTitleViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class EditPlantFragment : Fragment() {
@@ -42,9 +39,9 @@ class EditPlantFragment : Fragment() {
 
             val newUri = imageUri.lastPathSegment
 
-            lifecycleScope.launch {
-                viewModel.mapPhotos(newUri.toString())
-            }
+//            lifecycleScope.launch {
+//                viewModel.mapPhotos(newUri.toString())
+//            }
 
             Picasso.with(requireContext())
                 .load(imageUri)
@@ -87,9 +84,9 @@ class EditPlantFragment : Fragment() {
                 if (editTextTitle.isNotBlank()) {
                     val editTextDescription = editTextPlantDescription.text.toString()
 
-                    if (args.plant.plantImagePath != "empty" && viewModel.mappedPhotos.value == null) {
-                        imageUri = args.plant.plantImagePath
-                    }
+//                    if (args.plant.plantImagePath != "empty" && viewModel.mappedPhotos.value == null) {
+//                        imageUri = args.plant.plantImagePath
+//                    }
 
                     val plant = Plant(
                         plantId = args.plant.plantId,
@@ -101,7 +98,7 @@ class EditPlantFragment : Fragment() {
                     if (args.plant.plantImagePath == "empty") {
                         viewModel.savePlant(plant)
                     } else {
-                        viewModel.updatePlant(plant)
+//                        viewModel.updatePlant(plant)
 
                         val sharedTitleViewModel = ViewModelProvider(requireActivity()).get(
                             SharedTitleViewModel::class.java
@@ -115,21 +112,21 @@ class EditPlantFragment : Fragment() {
                 }
             }
 
-            viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-                viewModel.editPlantEvent.collect { event ->
-                    when (event) {
-                        EditPlantViewModel.EditPlantEvent.NavigateToHomeScreen -> {
-                            val action =
-                                EditPlantFragmentDirections.actionEditFragmentToHomeFragment()
-                            findNavController().navigate(action)
-                        }
-                    }
-                }
-            }
+//            viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+//                viewModel.editPlantEvent.collect { event ->
+//                    when (event) {
+//                        EditPlantViewModel.EditPlantEvent.NavigateToHomeScreen -> {
+//                            val action =
+//                                EditPlantFragmentDirections.actionEditFragmentToHomeFragment()
+//                            findNavController().navigate(action)
+//                        }
+//                    }
+//                }
+//            }
 
-            viewModel.mappedPhotos.observe(viewLifecycleOwner) { finalPhotoUri ->
-                this@EditPlantFragment.imageUri = finalPhotoUri
-            }
+//            viewModel.mappedPhotos.observe(viewLifecycleOwner) { finalPhotoUri ->
+//                this@EditPlantFragment.imageUri = finalPhotoUri
+//            }
         }
     }
 
