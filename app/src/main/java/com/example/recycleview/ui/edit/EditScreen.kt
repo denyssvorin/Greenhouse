@@ -35,7 +35,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,7 +57,6 @@ fun EditScreen(
     viewModel: EditPlantViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val imageUri by viewModel.mappedPhotos.collectAsState()
 
     val getContent = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
@@ -104,13 +102,14 @@ fun EditScreen(
                 onClick = {
                     viewModel.savePlant(
                         plant = Plant(
-                            plantImagePath = imageUri
+                            plantImagePath = plant.value
                                 ?: R.drawable.plant_placeholder_coloured.toString(),
                             plantName = viewModel.plantName,
-                            plantDescription = viewModel.plantDescription
+                            plantDescription = viewModel.plantDescription,
+                            plantId = plantId
                         )
                     )
-                    Toast.makeText(context, "Saved!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Updated!", Toast.LENGTH_SHORT).show()
                     navController.popBackStack()
                 },
                 content = {

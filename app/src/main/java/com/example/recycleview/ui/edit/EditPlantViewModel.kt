@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.recycleview.R
 import com.example.recycleview.data.Plant
 import com.example.recycleview.data.PlantDao
 import com.example.recycleview.repo.PlantRepository
@@ -24,11 +25,11 @@ class EditPlantViewModel @Inject constructor(
     private val repository: PlantRepository
 ) : ViewModel() {
 
-    private val _plantImageData = MutableStateFlow("")
+    private val _plantImageData = MutableStateFlow(R.drawable.plant_placeholder_coloured.toString())
     val plantImageData: StateFlow<String> = _plantImageData.asStateFlow()
 
     fun getPlant(id: Int) {
-        if (_plantImageData.value == ""
+        if (_plantImageData.value == R.drawable.plant_placeholder_coloured.toString()
             && plantName == ""
             && plantDescription == ""
         ) {
@@ -45,7 +46,7 @@ class EditPlantViewModel @Inject constructor(
     fun savePlant(plant: Plant) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                plantDao.upsertPlant(plant)
+                plantDao.insertPlant(plant)
             }
         }
     }
@@ -63,11 +64,8 @@ class EditPlantViewModel @Inject constructor(
         plantDescription = text
     }
 
-    private val _mappedPhotos = MutableStateFlow<String?>(null)
-    val mappedPhotos: StateFlow<String?> = _mappedPhotos
-
     fun mapPhotos(imagePath: String) = viewModelScope.launch {
-        val photos = repository.mapPhotosFromExternalStorage(imagePath)
-        _mappedPhotos.value = photos
+        val photo = repository.mapPhotosFromExternalStorage(imagePath)
+        _plantImageData.value = photo
     }
 }

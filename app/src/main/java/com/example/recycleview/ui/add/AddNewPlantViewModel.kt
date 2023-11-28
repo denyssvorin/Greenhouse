@@ -10,7 +10,6 @@ import com.example.recycleview.data.PlantDao
 import com.example.recycleview.repo.PlantRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -26,7 +25,7 @@ class AddNewPlantViewModel @Inject constructor(
     fun savePlant(plant: Plant) = viewModelScope.launch {
 
         withContext(Dispatchers.IO) {
-            plantDao.upsertPlant(plant)
+            plantDao.insertPlant(plant)
         }
     }
 
@@ -48,11 +47,8 @@ class AddNewPlantViewModel @Inject constructor(
     val mappedPhotos: StateFlow<String?> = _mappedPhotos
 
     fun mapPhotos(imagePath: String) = viewModelScope.launch {
-        val photos = async {
-            repository.mapPhotosFromExternalStorage(imagePath)
-        }
+        val photos = repository.mapPhotosFromExternalStorage(imagePath)
 
-        val result = photos.await()
-        _mappedPhotos.value = result
+        _mappedPhotos.value = photos
     }
 }

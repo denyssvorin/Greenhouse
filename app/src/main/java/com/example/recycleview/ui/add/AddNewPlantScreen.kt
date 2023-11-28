@@ -95,7 +95,7 @@ fun AddNewPlantScreen(
                 onClick = {
                     viewModel.savePlant(
                         plant = Plant(
-                            plantImagePath = viewModel.mappedPhotos.value.toString(),
+                            plantImagePath = imageUri.toString(),
                             plantName = viewModel.plantName,
                             plantDescription = viewModel.plantDescription
                         )

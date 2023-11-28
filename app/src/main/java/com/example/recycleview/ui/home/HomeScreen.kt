@@ -87,7 +87,7 @@ fun HomeScreen(
                 ) {
                     items(plantList.itemCount) { index ->
                         PlantItem(
-                            plant = plantList[index]!!,
+                            plant = plantList[index],
                             navController = navController
                         )
                     }

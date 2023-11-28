@@ -43,9 +43,10 @@ fun DetailsScreen(
     navController: NavHostController,
     viewModel: DetailsViewModel = hiltViewModel()
 ) {
-    val plant by viewModel.plantData1.collectAsState()
+    val plant by viewModel.plantData.collectAsState()
+
     LaunchedEffect(plantId) {
-        viewModel.getPlant1(plantId)
+        viewModel.getPlant(plantId)
     }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -78,7 +79,7 @@ fun DetailsScreen(
                     )
                 },
                 content = {
-                    Icon(Icons.Filled.Edit, "Floating action button.")
+                    Icon(Icons.Filled.Edit, stringResource(id = R.string.edit))
                 })
         },
         content = { padding ->
