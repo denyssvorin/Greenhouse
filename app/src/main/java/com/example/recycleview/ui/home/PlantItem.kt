@@ -44,13 +44,25 @@ fun PlantItem(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-            GlideImage(
-                model = plant?.plantImagePath ?: R.drawable.plant_placeholder_coloured,
-                contentDescription = "Plant image",
-                modifier = Modifier.size(150.dp),
-                contentScale = ContentScale.Crop,
-                alignment = Alignment.Center
-            )
+            val plantImageData = plant?.plantImagePath
+            if (plantImageData != "null") {
+                GlideImage(
+                    model = plant?.plantImagePath ?: R.drawable.plant_placeholder_coloured,
+                    contentDescription = "Plant image",
+                    modifier = Modifier.size(150.dp),
+                    contentScale = ContentScale.Crop,
+                    alignment = Alignment.Center
+                )
+            } else {
+                GlideImage(
+                    model = R.drawable.plant_placeholder_coloured,
+                    contentDescription = "Plant image",
+                    modifier = Modifier.size(150.dp),
+                    contentScale = ContentScale.Fit,
+                    alignment = Alignment.Center
+                )
+            }
+
             Text(
                 text = plant?.plantName ?: stringResource(id = R.string.plant),
                 Modifier

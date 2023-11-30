@@ -55,7 +55,7 @@ fun AddNewPlantScreen(
     viewModel: AddNewPlantViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
-    val imageUri by viewModel.mappedPhotos.collectAsState()
+    val imageUri by viewModel.mappedPhoto.collectAsState()
 
     val getContent = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()

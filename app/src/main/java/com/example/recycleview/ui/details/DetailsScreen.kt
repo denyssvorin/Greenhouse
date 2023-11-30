@@ -93,15 +93,30 @@ fun DetailsScreen(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    GlideImage(
-                        model = plant?.plantImagePath,
-                        contentDescription = plant?.plantName,
-                        modifier = Modifier
-                            .padding(10.dp)
-                            .size(250.dp),
-                        contentScale = ContentScale.Crop,
-                        alignment = Alignment.Center
-                    )
+                    val plantImageData = plant?.plantImagePath
+                    if (plantImageData != "null") {
+                        GlideImage(
+                            model = plantImageData,
+                            contentDescription = plant?.plantName,
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .size(250.dp),
+                            contentScale = ContentScale.Crop,
+                            alignment = Alignment.Center
+                        )
+                    } else {
+                        GlideImage(
+                            model = R.drawable.plant_placeholder_coloured,
+                            contentDescription = stringResource(id = R.string.plant_image),
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .size(250.dp),
+                            contentScale = ContentScale.Crop,
+                            alignment = Alignment.Center
+                        )
+                    }
+
+
                     Text(
                         text = plant?.plantName.toString(),
                         style = MaterialTheme.typography.titleMedium

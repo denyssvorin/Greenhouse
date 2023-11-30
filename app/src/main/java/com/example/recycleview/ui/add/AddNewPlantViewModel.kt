@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -43,12 +44,12 @@ class AddNewPlantViewModel @Inject constructor(
         plantDescription = text
     }
 
-    private val _mappedPhotos = MutableStateFlow<String?>(null)
-    val mappedPhotos: StateFlow<String?> = _mappedPhotos
+    private val _mappedPhoto = MutableStateFlow<String?>(null)
+    val mappedPhoto: StateFlow<String?> = _mappedPhoto.asStateFlow()
 
     fun mapPhotos(imagePath: String) = viewModelScope.launch {
-        val photos = repository.mapPhotosFromExternalStorage(imagePath)
+        val photo = repository.mapPhotosFromExternalStorage(imagePath)
 
-        _mappedPhotos.value = photos
+        _mappedPhoto.value = photo
     }
 }
