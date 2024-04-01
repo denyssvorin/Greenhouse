@@ -5,4 +5,8 @@
     <string name="save">Save</string>
     <string name="name">Name</string>
     <string name="main">Main</string>
+    <string name="explanationOfTheImportanceOfPermission">The media access is necessary for your ability to add your own images. Please grant the permission</string>
+    <string name="requestPermissions">Request permissions</string>
+    <string name="updated">Updated</string>
+    <string name="saved">Saved</string>
 </resources>

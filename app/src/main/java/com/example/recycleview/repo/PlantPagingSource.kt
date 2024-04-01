@@ -3,7 +3,6 @@ package com.example.recycleview.repo
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.recycleview.data.Plant
-import java.lang.Exception
 
 typealias PlantReposDBPageLoader = suspend (limit: Int, offset: Int) -> List<Plant>
 

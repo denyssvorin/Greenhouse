@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Card
 import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,14 +42,15 @@ fun PlantItem(
                 )
             },
         elevation = 2.dp,
+        backgroundColor = MaterialTheme.colorScheme.secondaryContainer
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
             val plantImageData = plant?.plantImagePath
-            if (plantImageData != "null") {
+            if (plantImageData != null) {
                 GlideImage(
-                    model = plant?.plantImagePath ?: R.drawable.plant_placeholder_coloured,
-                    contentDescription = "Plant image",
+                    model = plantImageData,
+                    contentDescription = stringResource(id = R.string.plant_image),
                     modifier = Modifier.size(150.dp),
                     contentScale = ContentScale.Crop,
                     alignment = Alignment.Center
@@ -56,18 +58,22 @@ fun PlantItem(
             } else {
                 GlideImage(
                     model = R.drawable.plant_placeholder_coloured,
-                    contentDescription = "Plant image",
-                    modifier = Modifier.size(150.dp),
-                    contentScale = ContentScale.Fit,
+                    contentDescription = stringResource(id = R.string.plant_image),
+                    modifier = Modifier
+                        .size(150.dp)
+                        .padding(top = 16.dp),
+                    contentScale = ContentScale.Crop,
                     alignment = Alignment.Center
                 )
             }
+
 
             Text(
                 text = plant?.plantName ?: stringResource(id = R.string.plant),
                 Modifier
                     .padding(8.dp),
                 maxLines = 1,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.sp,

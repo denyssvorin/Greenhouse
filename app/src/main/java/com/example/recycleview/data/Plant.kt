@@ -9,7 +9,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Plant(
     @PrimaryKey(autoGenerate = true) val plantId: Int = 0,
-    val plantImagePath: String,
+    val plantImagePath: String?,
     val plantName: String = "plant_name",
     val plantDescription: String = "plant_description"
 ) : Parcelable

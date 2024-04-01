@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.recycleview.R
 import com.example.recycleview.data.Plant
 import com.example.recycleview.data.PlantDao
 import com.example.recycleview.repo.PlantRepository
@@ -25,21 +24,16 @@ class EditPlantViewModel @Inject constructor(
     private val repository: PlantRepository
 ) : ViewModel() {
 
-    private val _plantImageData = MutableStateFlow(R.drawable.plant_placeholder_coloured.toString())
-    val plantImageData: StateFlow<String> = _plantImageData.asStateFlow()
+    private val _plantImageData = MutableStateFlow<String?>(null)
+    val plantImageData: StateFlow<String?> = _plantImageData.asStateFlow()
 
     fun getPlant(id: Int) {
-        if (_plantImageData.value == R.drawable.plant_placeholder_coloured.toString()
-            && plantName == ""
-            && plantDescription == ""
-        ) {
-            viewModelScope.launch {
-                val plant = plantDao.getSinglePlant(id).first()
+        viewModelScope.launch {
+            val plant = plantDao.getSinglePlant(id).first()
 
-                _plantImageData.value = plant.plantImagePath
-                plantName = plant.plantName
-                plantDescription = plant.plantDescription
-            }
+            _plantImageData.value = plant.plantImagePath
+            plantName = plant.plantName
+            plantDescription = plant.plantDescription
         }
     }
 

@@ -9,6 +9,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.recycleview.data.Plant
 import com.example.recycleview.data.PlantDatabase
+import com.example.recycleview.data.datastore.SortOrder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -21,7 +22,7 @@ class PlantRepositoryImpl @Inject constructor(
     override suspend fun mapPhotosFromExternalStorage(imagePath: String): String {
         return withContext(Dispatchers.IO) {
             val numericPart = imagePath.replace(Regex("[^0-9]"), "")
-            var result = "null"
+            var result = "mapDefault"
 
             val projection = arrayOf(
                 MediaStore.Images.Media._ID
@@ -52,13 +53,13 @@ class PlantRepositoryImpl @Inject constructor(
                     Log.e("TAG", "mapPhotosFromExternalStorage: error")
                 }
                 result
-            } ?: "null"
+            } ?: "map.withContext"
         }
     }
 
-    override fun getPagingPlants(searchQuery: String): Flow<PagingData<Plant>> {
+    override fun getPagingPlants(searchQuery: String, sortOrder: SortOrder): Flow<PagingData<Plant>> {
         val dbLoader: PlantReposDBPageLoader = { limit, offset ->
-            getPlants(limit, offset, searchQuery)
+            getPlants(limit, offset, searchQuery, sortOrder)
         }
         return Pager(
             config = PagingConfig(
@@ -74,9 +75,9 @@ class PlantRepositoryImpl @Inject constructor(
         ).flow
     }
 
-    private suspend fun getPlants(limit: Int, offset: Int, searchQuery: String) : List<Plant> =
+    private suspend fun getPlants(limit: Int, offset: Int, searchQuery: String, sortOrder: SortOrder) : List<Plant> =
         withContext(Dispatchers.IO) {
-            val list = db.plantDao().getPlants(limit = limit, offset = offset, searchText = searchQuery)
+            val list = db.plantDao().getPlants(limit = limit, offset = offset, searchText = searchQuery, sortOrder = sortOrder)
             return@withContext list
         }
 

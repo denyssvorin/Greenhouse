@@ -12,10 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -25,20 +21,26 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -71,10 +73,17 @@ fun AddNewPlantScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
+                colors = TopAppBarDefaults.mediumTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
                 title = {
-                    Text(text = stringResource(R.string.create))
+                    Text(
+                        text = stringResource(R.string.create),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 },
                 navigationIcon = {
                     IconButton(
@@ -84,7 +93,8 @@ fun AddNewPlantScreen(
                         content = {
                             Icon(
                                 imageVector = Icons.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.search)
+                                contentDescription = stringResource(R.string.search),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         })
                 }
@@ -95,19 +105,21 @@ fun AddNewPlantScreen(
                 onClick = {
                     viewModel.savePlant(
                         plant = Plant(
-                            plantImagePath = imageUri.toString(),
+                            plantImagePath = imageUri,
                             plantName = viewModel.plantName,
                             plantDescription = viewModel.plantDescription
                         )
                     )
-                    Toast.makeText(context, "Saved!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.saved), Toast.LENGTH_SHORT)
+                        .show()
                     navController.popBackStack()
                 },
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
                 content = {
                     Icon(
                         imageVector = Icons.Filled.Check,
                         contentDescription = stringResource(R.string.save),
-                        tint = MaterialTheme.colorScheme.onSurface
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             )
@@ -121,17 +133,16 @@ fun AddNewPlantScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(10.dp),
+                        .padding(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .align(Alignment.CenterHorizontally)
-                            .padding(8.dp),
+                            .align(Alignment.CenterHorizontally),
                         shape = MaterialTheme.shapes.medium,
                         colors = CardDefaults.cardColors(
-                            containerColor = Color.White
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer
                         )
                     ) {
                         Box(
@@ -143,10 +154,11 @@ fun AddNewPlantScreen(
                             GlideImage(
                                 model = imageUri ?: R.drawable.plant_placeholder_coloured,
                                 contentDescription = stringResource(R.string.plant),
+                                contentScale = ContentScale.Inside,
                                 modifier = Modifier
-                                    .size(250.dp)
+                                    .size(height = 250.dp, width = Dp.Unspecified)
                                     .align(Alignment.Center)
-
+                                    .padding(8.dp)
                             )
                             Button(
                                 onClick = {
@@ -158,6 +170,7 @@ fun AddNewPlantScreen(
                                     contentColor = MaterialTheme.colorScheme.onTertiaryContainer
                                 ),
                                 modifier = Modifier
+                                    .padding(8.dp)
                                     .size(64.dp)
                                     .align(Alignment.BottomStart),
                                 contentPadding = PaddingValues(16.dp)
@@ -165,6 +178,7 @@ fun AddNewPlantScreen(
                                 Icon(
                                     painter = painterResource(R.drawable.add_photo_alternate),
                                     contentDescription = stringResource(R.string.add_from_gallery),
+                                    tint = MaterialTheme.colorScheme.onTertiaryContainer,
                                     modifier = Modifier
                                         .fillMaxSize()
                                 )
@@ -180,7 +194,7 @@ fun AddNewPlantScreen(
                             .align(Alignment.CenterHorizontally),
                         shape = MaterialTheme.shapes.medium,
                         colors = CardDefaults.cardColors(
-                            containerColor = Color.White
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer
                         )
                     ) {
                         OutlinedTextField(
@@ -188,15 +202,16 @@ fun AddNewPlantScreen(
                                 .fillMaxWidth()
                                 .padding(
                                     start = 8.dp,
-                                    end = 8.dp
+                                    end = 8.dp,
+                                    top = 8.dp
                                 ),
                             value = viewModel.plantName,
                             colors = TextFieldDefaults.textFieldColors(
                                 focusedLabelColor = MaterialTheme.colorScheme.primary,
                                 focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                                backgroundColor = Color.Transparent,
-                                cursorColor = MaterialTheme.colorScheme.primary
-                            ),
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                cursorColor = MaterialTheme.colorScheme.primary,
+                                ),
                             onValueChange = { newValue ->
                                 viewModel.updatePlantNameTextField(newValue)
                             },
@@ -209,14 +224,14 @@ fun AddNewPlantScreen(
                                 .padding(
                                     start = 8.dp,
                                     end = 8.dp,
-                                    bottom = 8.dp
+                                    bottom = 16.dp
                                 ),
                             value = viewModel.plantDescription,
                             colors = TextFieldDefaults.textFieldColors(
                                 focusedLabelColor = MaterialTheme.colorScheme.primary,
                                 focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                                backgroundColor = Color.Transparent,
-                                cursorColor = MaterialTheme.colorScheme.primary
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                cursorColor = MaterialTheme.colorScheme.primary,
                             ),
                             onValueChange = { newValue ->
                                 viewModel.updatePlantDescriptionTextField(newValue)
