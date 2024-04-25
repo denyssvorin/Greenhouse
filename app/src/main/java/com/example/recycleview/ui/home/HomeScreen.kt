@@ -2,9 +2,12 @@ package com.example.recycleview.ui.home
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,8 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
@@ -26,6 +27,8 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -38,12 +41,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,25 +58,20 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.recycleview.R
 import com.example.recycleview.ui.ScreenNavigation
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier
 ) {
-
-//    LaunchedEffect(navController) {
-//        viewModel.updateSearchQuery("")
-//    }
     val plantList = viewModel.plantPagingFlow.collectAsLazyPagingItems()
-    val context = LocalContext.current
 
     val state = viewModel.state.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             Crossfade(
@@ -123,7 +122,7 @@ fun HomeScreen(
             FloatingActionButton(
                 onClick = {
                     navController.navigate(
-                        ScreenNavigation.AddNewPlantScreen.route
+                        ScreenNavigation.EditScreen.route
                     )
                 },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -138,7 +137,7 @@ fun HomeScreen(
         },
         content = { padding ->
             Surface(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxSize()
                     .padding(padding)
                     .background(MaterialTheme.colorScheme.background)
@@ -146,9 +145,9 @@ fun HomeScreen(
             ) {
                 if (plantList.loadState.refresh is LoadState.Loading) {
 
-                    Box(modifier = Modifier.fillMaxSize()) {
+                    Box(modifier = modifier.fillMaxSize()) {
                         CircularProgressIndicator(
-                            modifier = Modifier
+                            modifier = modifier
                                 .size(48.dp)
                                 .align(Alignment.Center),
                             color = MaterialTheme.colorScheme.secondary,
@@ -156,17 +155,52 @@ fun HomeScreen(
                         )
                     }
                 } else {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(3),
-                        contentPadding = PaddingValues(8.dp),
-                        modifier = Modifier.background(MaterialTheme.colorScheme.background)
-
-                    ) {
-                        items(plantList.itemCount) { index ->
-                            PlantItem(
-                                plant = plantList[index],
-                                navController = navController
-                            )
+                    if (plantList.itemCount != 0) {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(3),
+                            modifier = modifier
+                                .background(MaterialTheme.colorScheme.background)
+                                .padding(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(plantList.itemCount) { index ->
+                                PlantItem(
+                                    plantEntity = plantList[index],
+                                    navController = navController
+                                )
+                            }
+                        }
+                    } else {
+                        Box(
+                            modifier = modifier
+                                .fillMaxSize()
+                                .padding(8.dp)
+                        ) {
+                            Column(
+                                modifier = modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.plant_image),
+                                    contentDescription = stringResource(R.string.empty_list_image),
+                                    alpha = 0.8f,
+                                    modifier = modifier.scale(0.9f)
+                                )
+                                Spacer(modifier = modifier.size(8.dp))
+                                Text(
+                                    text = if (!state.value.isSearchBarVisible) {
+                                        stringResource(R.string.your_personal_list_is_empty)
+                                    } else {
+                                        stringResource(R.string.no_results)
+                                    },
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                                    style = MaterialTheme.typography.titleLarge.copy(
+                                        fontWeight = FontWeight.Bold,
+                                    ),
+                                )
+                            }
                         }
                     }
                 }
@@ -181,12 +215,13 @@ fun SearchAppBar(
     onCloseIconClicked: () -> Unit,
     onInputValueChange: (String) -> Unit,
     text: String,
-    onSearchClicked: () -> Unit
+    onSearchClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     OutlinedTextField(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(8.dp),
         value = text,
         shape = RoundedCornerShape(25),
         onValueChange = {

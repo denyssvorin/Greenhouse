@@ -7,9 +7,9 @@ import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.example.recycleview.data.Plant
-import com.example.recycleview.data.PlantDatabase
 import com.example.recycleview.data.datastore.SortOrder
+import com.example.recycleview.data.plant.PlantEntity
+import com.example.recycleview.data.plant.PlantDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -57,7 +57,7 @@ class PlantRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getPagingPlants(searchQuery: String, sortOrder: SortOrder): Flow<PagingData<Plant>> {
+    override fun getPagingPlants(searchQuery: String, sortOrder: SortOrder): Flow<PagingData<PlantEntity>> {
         val dbLoader: PlantReposDBPageLoader = { limit, offset ->
             getPlants(limit, offset, searchQuery, sortOrder)
         }
@@ -75,7 +75,7 @@ class PlantRepositoryImpl @Inject constructor(
         ).flow
     }
 
-    private suspend fun getPlants(limit: Int, offset: Int, searchQuery: String, sortOrder: SortOrder) : List<Plant> =
+    private suspend fun getPlants(limit: Int, offset: Int, searchQuery: String, sortOrder: SortOrder) : List<PlantEntity> =
         withContext(Dispatchers.IO) {
             val list = db.plantDao().getPlants(limit = limit, offset = offset, searchText = searchQuery, sortOrder = sortOrder)
             return@withContext list

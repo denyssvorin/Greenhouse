@@ -3,9 +3,11 @@ package com.example.recycleview.di
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.example.recycleview.data.PlantDatabase
+import com.example.recycleview.data.alarm.AlarmScheduler
+import com.example.recycleview.data.alarm.AlarmSchedulerImpl
 import com.example.recycleview.data.datastore.PreferencesManager
 import com.example.recycleview.data.datastore.PreferencesManagerImpl
+import com.example.recycleview.data.plant.PlantDatabase
 import com.example.recycleview.repo.PlantRepository
 import com.example.recycleview.repo.PlantRepositoryImpl
 import dagger.Module
@@ -31,6 +33,9 @@ object AppModule {
     @Provides
     fun providePlantDao(db: PlantDatabase) = db.plantDao()
 
+    @Provides
+    fun providePlantScheduleDao(db: PlantDatabase) = db.plantScheduleDao()
+
     @ApplicationScope
     @Provides
     @Singleton
@@ -45,6 +50,9 @@ object AppModule {
     fun providePreferencesManager(@ApplicationContext context: Context): PreferencesManager =
         PreferencesManagerImpl(context)
 
+    @Provides
+    fun provideAlarmScheduler(@ApplicationContext context: Context): AlarmScheduler =
+        AlarmSchedulerImpl(context)
 }
 
 @Retention(AnnotationRetention.RUNTIME)

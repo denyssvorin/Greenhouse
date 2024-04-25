@@ -38,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -49,16 +50,17 @@ import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.recycleview.R
-import com.example.recycleview.data.Plant
+import com.example.recycleview.domain.Plant
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun EditScreen(
-    plantId: Int,
+    plantId: Int?,
     navController: NavHostController,
     viewModel: EditPlantViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val plantImage = viewModel.plantImageUri.collectAsState()
 
     val getContent = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
@@ -72,11 +74,12 @@ fun EditScreen(
         }
     }
 
-    LaunchedEffect(plantId) {
-        viewModel.getPlant(plantId)
+    if (plantId != null) {
+        LaunchedEffect(plantId) {
+            viewModel.getPlant(plantId)
+        }
     }
 
-    val plantImage = viewModel.plantImageData.collectAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -88,7 +91,11 @@ fun EditScreen(
                 ),
                 title = {
                     Text(
-                        text = stringResource(R.string.edit),
+                        text = if (plantId != null) {
+                            stringResource(id = R.string.edit)
+                        } else {
+                            stringResource(id = R.string.create)
+                        },
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
@@ -112,13 +119,25 @@ fun EditScreen(
                 onClick = {
                     viewModel.savePlant(
                         plant = Plant(
+                            plantId = plantId,
                             plantImagePath = plantImage.value,
                             plantName = viewModel.plantName,
                             plantDescription = viewModel.plantDescription,
-                            plantId = plantId
                         )
                     )
-                    Toast.makeText(context, context.getString(R.string.updated), Toast.LENGTH_SHORT).show()
+                    if (plantId != null) {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.updated),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.saved),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                     navController.popBackStack()
                 },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -137,124 +156,134 @@ fun EditScreen(
                     .fillMaxWidth()
                     .padding(padding)
             ) {
-                Box(
+                Column(
                     modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                        .fillMaxSize()
+                        .padding(8.dp)
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column(
+                    Card(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(8.dp)
-                            .verticalScroll(rememberScrollState()),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .fillMaxWidth()
+                            .align(Alignment.CenterHorizontally),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                        )
                     ) {
-                        Card(
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .align(Alignment.CenterHorizontally),
-                            shape = MaterialTheme.shapes.medium,
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer
-                            )
+                                .padding(4.dp)
                         ) {
-                            Box(
+                            GlideImage(
+                                model = plantImage.value ?: R.drawable.plant_placeholder_coloured,
+                                contentDescription = stringResource(R.string.plant),
+                                contentScale = ContentScale.Inside,
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(4.dp)
-                            ) {
-                                GlideImage(
-                                    model = plantImage.value,
-                                    contentDescription = stringResource(R.string.plant),
-                                    contentScale = ContentScale.Inside,
-                                    modifier = Modifier
-                                        .size(height = 250.dp, width = Dp.Unspecified)
-                                        .align(Alignment.Center)
-                                        .padding(8.dp)
-                                )
-                                Button(
-                                    onClick = {
-                                        getContent.launch("image/*")
-                                    },
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-                                    ),
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .size(64.dp)
-                                        .align(Alignment.BottomStart),
-                                    contentPadding = PaddingValues(16.dp)
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.add_photo_alternate),
-                                        contentDescription = stringResource(R.string.add_from_gallery),
-                                        tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                    )
-                                }
-                            }
-                        }
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    top = 10.dp
-                                )
-                                .align(Alignment.CenterHorizontally),
-                            shape = MaterialTheme.shapes.medium,
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer
+                                    .size(height = 250.dp, width = Dp.Unspecified)
+                                    .align(Alignment.Center)
+                                    .padding(8.dp)
                             )
-                        ) {
-                            OutlinedTextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(
-                                        start = 8.dp,
-                                        end = 8.dp,
-                                        top = 8.dp
-                                    ),
-                                value = viewModel.plantName,
-                                colors = TextFieldDefaults.textFieldColors(
-                                    focusedLabelColor = MaterialTheme.colorScheme.primary,
-                                    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                    cursorColor = MaterialTheme.colorScheme.primary
-                                ),
-                                onValueChange = { newValue ->
-                                    viewModel.updatePlantNameTextField(newValue)
-                                },
-                                label = { Text(stringResource(R.string.name)) },
-                                shape = MaterialTheme.shapes.small
-                            )
-                            OutlinedTextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(
-                                        start = 8.dp,
-                                        end = 8.dp,
-                                        bottom = 16.dp
-                                    ),
-                                value = viewModel.plantDescription,
-                                colors = TextFieldDefaults.textFieldColors(
-                                    focusedLabelColor = MaterialTheme.colorScheme.primary,
-                                    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                    cursorColor = MaterialTheme.colorScheme.primary
-                                ),
-                                onValueChange = { newValue ->
-                                    viewModel.updatePlantDescriptionTextField(newValue)
-                                },
-                                label = { Text(stringResource(R.string.description)) }
+                            IconButtonCustom(
+                                onClick = { getContent.launch("image/*") },
+                                painterIcon = painterResource(R.drawable.add_photo_alternate),
+                                iconContentDescription = stringResource(R.string.add_from_gallery),
+                                modifier = Modifier.align(Alignment.BottomStart)
                             )
                         }
                     }
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                top = 10.dp
+                            )
+                            .align(Alignment.CenterHorizontally),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                        )
+                    ) {
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    start = 8.dp,
+                                    end = 8.dp,
+                                    top = 8.dp
+                                ),
+                            value = viewModel.plantName,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                cursorColor = MaterialTheme.colorScheme.primary,
+                                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                            ),
+                            onValueChange = { newValue ->
+                                viewModel.updatePlantNameTextField(newValue)
+                            },
+                            label = { Text(stringResource(R.string.name)) },
+                            shape = MaterialTheme.shapes.small
+                        )
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    start = 8.dp,
+                                    end = 8.dp,
+                                    bottom = 16.dp
+                                ),
+                            value = viewModel.plantDescription,
+                            colors = TextFieldDefaults.textFieldColors(
+                                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                cursorColor = MaterialTheme.colorScheme.primary
+                            ),
+                            onValueChange = { newValue ->
+                                viewModel.updatePlantDescriptionTextField(newValue)
+                            },
+                            label = { Text(stringResource(R.string.description)) }
+                        )
+                    }
                 }
+
             }
         }
     )
+}
+
+@Composable
+fun IconButtonCustom(
+    onClick: () -> Unit,
+    painterIcon: Painter,
+    iconContentDescription: String,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = {
+            onClick()
+        },
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+        ),
+        modifier = modifier
+            .padding(8.dp)
+            .size(64.dp),
+        contentPadding = PaddingValues(16.dp)
+    ) {
+        Icon(
+            painter = painterIcon,
+            contentDescription = iconContentDescription,
+            tint = MaterialTheme.colorScheme.onTertiaryContainer,
+            modifier = modifier
+                .fillMaxSize()
+        )
+    }
 }
 

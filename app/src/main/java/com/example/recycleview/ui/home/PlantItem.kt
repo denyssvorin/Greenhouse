@@ -21,23 +21,22 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.recycleview.R
-import com.example.recycleview.data.Plant
+import com.example.recycleview.domain.Plant
 import com.example.recycleview.ui.ScreenNavigation
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun PlantItem(
-    plant: Plant?,
+    plantEntity: Plant?,
     navController: NavController
 ) {
     Card(
         modifier = Modifier
             .fillMaxSize()
-            .padding(4.dp)
             .clickable {
                 navController.navigate(
                     ScreenNavigation.DetailsScreen.withArgs(
-                        plant?.plantId.toString()
+                        plantEntity?.plantId.toString()
                     )
                 )
             },
@@ -46,7 +45,7 @@ fun PlantItem(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-            val plantImageData = plant?.plantImagePath
+            val plantImageData = plantEntity?.plantImagePath
             if (plantImageData != null) {
                 GlideImage(
                     model = plantImageData,
@@ -67,9 +66,8 @@ fun PlantItem(
                 )
             }
 
-
             Text(
-                text = plant?.plantName ?: stringResource(id = R.string.plant),
+                text = plantEntity?.plantName ?: stringResource(id = R.string.plant),
                 Modifier
                     .padding(8.dp),
                 maxLines = 1,

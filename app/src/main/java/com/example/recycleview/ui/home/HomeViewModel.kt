@@ -6,16 +6,19 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import com.example.recycleview.data.Plant
+import androidx.paging.map
 import com.example.recycleview.data.datastore.PreferencesManager
 import com.example.recycleview.data.datastore.SortOrder
+import com.example.recycleview.data.mappers.toPlant
+import com.example.recycleview.data.plant.PlantEntity
+import com.example.recycleview.domain.Plant
 import com.example.recycleview.repo.PlantRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,16 +30,23 @@ class HomeViewModel @Inject constructor(
 
     private val searchQuery = MutableStateFlow("")
 
-    val preferencesFlow = preferencesManager.preferencesFlow
+    private val preferencesFlow = preferencesManager.preferencesFlow
 
-    val plantPagingFlow: Flow<PagingData<Plant>> = combine(
+    private val _plantEntityPagingFlow: Flow<PagingData<PlantEntity>> = combine(
         searchQuery,
         preferencesFlow
     ) { query, filterPreferences ->
         Pair(query, filterPreferences)
     }.flatMapLatest { (query, filterPreferences) ->
         repository.getPagingPlants(query, filterPreferences.sortOrder)
-    }.debounce(100)
+    }
+
+    val plantPagingFlow: Flow<PagingData<Plant>> =
+        _plantEntityPagingFlow.map { pagingData: PagingData<PlantEntity> ->
+            pagingData.map { data: PlantEntity ->
+                data.toPlant()
+            }
+        }
 
     var searchText by mutableStateOf(searchQuery.value)
         private set
@@ -95,7 +105,6 @@ sealed class UserAction {
     object CloseIconClicked : UserAction()
     object SortIconClicked : UserAction()
     object SortMenuDismiss : UserAction()
-//    data class TextFieldInput(val text: String) : UserAction()
     data class SortItemClicked(val type: SortType) : UserAction()
 }
 
