@@ -30,6 +30,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -129,7 +130,7 @@ fun HomeScreen(
                 content = {
                     Icon(
                         imageVector = Icons.Filled.Add,
-                        contentDescription = "Floating action button.",
+                        contentDescription = stringResource(id = R.string.add),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
@@ -233,7 +234,7 @@ fun SearchAppBar(
         ),
         placeholder = {
             Text(
-                text = "Search...",
+                text = stringResource(R.string.search),
                 color = MaterialTheme.colorScheme.primary.copy(alpha = ContentAlpha.medium),
                 fontSize = MaterialTheme.typography.titleMedium.fontSize,
             )
@@ -241,7 +242,7 @@ fun SearchAppBar(
         leadingIcon = {
             Icon(
                 imageVector = Icons.Filled.Search,
-                contentDescription = "Search Icon",
+                contentDescription = stringResource(R.string.search_icon),
                 tint = MaterialTheme.colorScheme.primary.copy(
                     alpha = ContentAlpha.medium
                 )
@@ -259,7 +260,7 @@ fun SearchAppBar(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Close,
-                    contentDescription = "Close Icon",
+                    contentDescription = stringResource(R.string.close_icon),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -309,19 +310,32 @@ fun HomeTopBar(
             IconButton(onClick = onSortIconClicked) {
                 Icon(
                     painter = painterResource(R.drawable.filter_list),
-                    contentDescription = "Sort Icon",
+                    contentDescription = stringResource(R.string.sort_icon),
                     tint = MaterialTheme.colorScheme.onBackground,
                 )
                 DropdownMenu(
                     expanded = isSortMenuVisible,
-                    onDismissRequest = onSortMenuDismiss
+                    onDismissRequest = onSortMenuDismiss,
+                    modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceContainer)
                 ) {
-                    DropdownMenuItem(onClick = onSortItemA2ZClicked, text = {
-                        Text(text = "Sort  A -> Z")
-                    })
-                    DropdownMenuItem(onClick = onSortItemZ2AClicked, text = {
-                        Text(text = "Sort  Z -> A")
-                    })
+                    DropdownMenuItem(
+                        onClick = onSortItemA2ZClicked,
+                        text = {
+                            Text(text = stringResource(R.string.sort_a_z))
+                        },
+                        colors = MenuDefaults.itemColors(
+                            textColor = MaterialTheme.colorScheme.onSurface
+                        )
+                    )
+                    DropdownMenuItem(
+                        onClick = onSortItemZ2AClicked,
+                        text = {
+                            Text(text = stringResource(R.string.sort_z_a))
+                        },
+                        colors = MenuDefaults.itemColors(
+                            textColor = MaterialTheme.colorScheme.onSurface
+                        )
+                    )
                 }
             }
         }

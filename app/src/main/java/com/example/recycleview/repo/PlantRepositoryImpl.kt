@@ -8,8 +8,8 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.recycleview.data.datastore.SortOrder
-import com.example.recycleview.data.plant.PlantEntity
 import com.example.recycleview.data.plant.PlantDatabase
+import com.example.recycleview.data.plant.PlantEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -30,7 +30,6 @@ class PlantRepositoryImpl @Inject constructor(
 
             val selection = "${MediaStore.Images.Media._ID} = ?"
             val selectionArgs = arrayOf(numericPart)
-            Log.d("TAG", "EditPlantFragment: selectionArgs: $selectionArgs")
 
             context.contentResolver?.query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,

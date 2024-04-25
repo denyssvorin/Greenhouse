@@ -119,7 +119,7 @@ fun DetailsScreen(
                     plantId = plant?.plantId ?: plantId
                 )
 
-                Toast.makeText(context, "Scheduled!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.notification_scheduled), Toast.LENGTH_SHORT).show()
             },
             dialogTitle = stringResource(R.string.set_up_notification),
             icon = painterResource(id = R.drawable.ic_schedule)
@@ -336,9 +336,10 @@ fun WateringNotificationItem(
     onDeleteClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val time: String = plantWateringSchedule.time
 
-    val days: String = plantWateringSchedule.daysInterval.days()
+    val days: String = plantWateringSchedule.daysInterval.days(context)
 
     val startDate: String = plantWateringSchedule.firstTriggerDate
 
@@ -376,17 +377,17 @@ fun WateringNotificationItem(
                         style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                     )
                     Text(
-                        text = "Repeat every: $days",
+                        text = "${stringResource(id = R.string.repeat_every)} $days",
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     Text(
-                        text = "Next watering: $nextWateringDate",
+                        text = stringResource(R.string.next_triggering, nextWateringDate),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
                 Icon(
                     painter = painterResource(id = R.drawable.ic_cancel),
-                    contentDescription = stringResource(R.string.cancel_watering),
+                    contentDescription = stringResource(R.string.remove),
                     tint = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.5f),
                     modifier = modifier.clickable { onDeleteClicked() }
                 )

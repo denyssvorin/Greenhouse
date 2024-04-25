@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Plant</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="search">Search</string>
     <string name="more">More</string>
     <string name="menu">Menu</string>
@@ -8,14 +7,12 @@
     <string name="open">Open</string>
     <string name="close">Close</string>
     <string name="create">Create</string>
-    <string name="home">Home</string>
     <string name="details">Details</string>
     <string name="edit">Edit</string>
     <string name="add_from_gallery">Add from gallery</string>
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="OK">OK</string>
-    <string name="label">Label</string>
     <string name="plant">Plant</string>
     <string name="save">Save</string>
     <string name="name">Name</string>
@@ -35,16 +32,12 @@
     <string name="dismiss">Dismiss</string>
     <string name="select_hour">Select hour</string>
     <string name="start_on">Start on:</string>
-    <string name="Ok">Ok</string>
-    <string name="it_s_time_to_water">It\'s time to water!</string>
-    <string name="add_watering">Add watering</string>
-    <string name="cancel_watering">Cancel watering</string>
     <string name="remove">Remove</string>
     <string name="confirmation_of_removal">Confirmation of removal</string>
     <string name="do_you_really_want_to_remove_this_item">Do you really want to remove this item?</string>
-    <string name="notification_channel_description">This type of notification is used to notify user when a plant needs watering</string>
+    <string name="notification_channel_description">This type of notification is used to inform the user that they need to pay attention to the plant</string>
     <string name="plant_watering_notifications">Plant watering notifications</string>
-    <string name="this_app_needs_access_to_post_notifications">This app needs access to post notifications for your ability to schedule plants watering</string>
+    <string name="this_app_needs_access_to_post_notifications">This app requires access to notifications so that you can add plant care notifications</string>
     <string name="this_app_needs_access_to_images">This app needs access to images for your ability to load your own images into the app</string>
     <string name="it_seems_you_permanently_declined_notification_permission">It seems you permanently declined notification permission. You can go to the app settings to grant it.</string>
     <string name="it_seems_you_permanently_declined_media_permission">It seems you permanently declined media permission. You can go to the app settings to grant it.</string>
@@ -52,11 +45,21 @@
     <string name="grant_permission">Grant permission</string>
     <string name="schedule_icon">Schedule icon</string>
     <string name="switch_to_keyboard_input">Switch to keyboard input</string>
-    <string name="switch_to_clock_input">Switch to clock input</string>
+    <string name="switch_to_clock_input">Switch to clock</string>
     <string name="notification_message">Notification message</string>
     <string name="empty_list_image">Empty list image</string>
     <string name="add_a_reminder">Add a reminder</string>
     <string name="set_up_notification">Set up notification</string>
     <string name="no_results">No results</string>
     <string name="your_personal_list_is_empty">Your personal list is empty</string>
+    <string name="notification_scheduled">Notification scheduled!</string>
+    <string name="next_triggering">Next triggering: %1$s</string>
+    <string name="day">day</string>
+    <string name="days">days</string>
+    <string name="days_2_3_4_uk">days</string>
+    <string name="close_icon">Close icon</string>
+    <string name="search_icon">Search icon</string>
+    <string name="sort_a_z"><![CDATA[Sort  A -> Z]]></string>
+    <string name="sort_z_a"><![CDATA[Sort  Z -> A]]></string>
+    <string name="sort_icon">Sort icon</string>
 </resources>

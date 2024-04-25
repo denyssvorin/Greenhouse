@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -242,6 +243,7 @@ fun DaysInputPart(
     }
 
     val numberRegex = """\b(?:[1-9]|[1-9]\d{1,2}|999)\b""".toRegex()
+    val context = LocalContext.current
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -276,7 +278,7 @@ fun DaysInputPart(
             )
         Spacer(modifier = modifier.size(8.dp))
         Text(
-            text = formatDays(textFieldValue),
+            text = formatDays(context, textFieldValue),
             style = MaterialTheme.typography.titleMedium,
         )
     }
