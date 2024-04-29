@@ -22,17 +22,17 @@
         android:theme="@style/Theme.RecycleView">
         <activity
             android:name="com.example.recycleview.ui.MainActivity"
-            android:windowSoftInputMode="adjustResize"
+            android:exported="true"
             android:launchMode="singleTask"
-            android:exported="true">
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver
-            android:name="com.example.recycleview.data.alarm.AlarmReceiver"/>
+        <receiver android:name="com.example.recycleview.data.alarm.AlarmReceiver" />
+        <service android:name="com.example.recycleview.data.notification.NotificationService" />
     </application>
 
 </manifest>

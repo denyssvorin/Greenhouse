@@ -53,7 +53,7 @@
     <string name="set_up_notification">Налаштування сповіщення</string>
     <string name="no_results">Немає результатів</string>
     <string name="your_personal_list_is_empty">Ваш персональний список порожній</string>
-    <string name="notification_scheduled">Сповіщення заплановано!</string>
+    <string name="notification_scheduled">Сповіщення заплановано</string>
     <string name="next_triggering">Наступне спрацювання: %1$s</string>
     <string name="day">день</string>
     <string name="days_2_3_4_uk">дні</string>

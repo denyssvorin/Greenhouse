@@ -1,6 +1,7 @@
 package com.example.recycleview.data.mappers
 
 import com.example.recycleview.data.alarm.AlarmPlant
+import com.example.recycleview.data.notification.NotificationServiceItem
 import com.example.recycleview.data.notification.NotificationItem
 import com.example.recycleview.data.plant.PlantEntity
 import com.example.recycleview.data.plantschedule.PlantWateringScheduleEntity
@@ -105,11 +106,19 @@ fun PlantScheduleData.toAlarmPlant(
     )
 }
 
-fun AlarmPlant.toNotificationItem(): NotificationItem {
+fun AlarmPlant.toNotificationServiceItem(): NotificationServiceItem {
+    return NotificationServiceItem(
+        scheduleId = scheduleId,
+        plantId = plantId,
+        message = message
+    )
+}
+
+fun Plant.toNotificationItem(scheduleId: String, notificationMessage: String): NotificationItem {
     return NotificationItem(
         scheduleId = scheduleId,
         plantImagePath = plantImagePath,
         plantName = plantName,
-        notificationMessage = message
+        notificationMessage = notificationMessage
     )
 }

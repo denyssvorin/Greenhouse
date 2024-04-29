@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import com.example.recycleview.data.alarm.AlarmSchedulerImpl.Companion.EXTRA_NOTIFICATION_ALARM_ITEM
-import com.example.recycleview.data.notification.NotificationItem
-import com.example.recycleview.data.notification.NotificationManager
+import com.example.recycleview.data.notification.NotificationService
+import com.example.recycleview.data.notification.NotificationServiceItem
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -14,11 +14,11 @@ class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
 
-        val notificationItem: NotificationItem =
+        val notificationItem: NotificationServiceItem =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 intent?.getParcelableExtra(
                     EXTRA_NOTIFICATION_ALARM_ITEM,
-                    NotificationItem::class.java
+                    NotificationServiceItem::class.java
                 )
             } else {
                 intent?.getParcelableExtra(EXTRA_NOTIFICATION_ALARM_ITEM)
@@ -26,10 +26,9 @@ class AlarmReceiver : BroadcastReceiver() {
 
         println("Alarm triggered in broadcast receiver")
 
-        val plantWateringNotification = context?.let {
-            NotificationManager(it)
+        val notificationIntent = Intent(context, NotificationService::class.java).also { notificationIntent ->
+            notificationIntent.putExtra(NotificationService.EXTRA_PLANT, notificationItem)
         }
-        plantWateringNotification?.createNotificationChannels()
-        plantWateringNotification?.createNotification(notificationItem)
+        context?.startService(notificationIntent)
     }
 }

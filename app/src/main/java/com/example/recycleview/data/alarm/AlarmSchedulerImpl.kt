@@ -4,7 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import com.example.recycleview.data.mappers.toNotificationItem
+import com.example.recycleview.data.mappers.toNotificationServiceItem
 import javax.inject.Inject
 
 
@@ -15,7 +15,7 @@ class AlarmSchedulerImpl @Inject constructor(
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
     override fun schedule(alarmItem: AlarmPlant) {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra(EXTRA_NOTIFICATION_ALARM_ITEM, alarmItem.toNotificationItem())
+            putExtra(EXTRA_NOTIFICATION_ALARM_ITEM, alarmItem.toNotificationServiceItem())
         }
 
         alarmManager.setInexactRepeating(
