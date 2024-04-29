@@ -145,7 +145,7 @@ fun AlarmScheduleDialog(
             Icon(icon, contentDescription = stringResource(R.string.schedule_icon))
         },
         title = {
-            Text(text = dialogTitle)
+            Text(text = dialogTitle, textAlign = TextAlign.Center)
         },
         text = {
             Column(modifier = modifier.fillMaxWidth()) {

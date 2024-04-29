@@ -94,7 +94,7 @@ fun EditScreen(
                         text = if (plantId != null) {
                             stringResource(id = R.string.edit)
                         } else {
-                            stringResource(id = R.string.create)
+                            stringResource(id = R.string.add)
                         },
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

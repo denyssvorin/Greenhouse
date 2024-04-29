@@ -119,7 +119,11 @@ fun DetailsScreen(
                     plantId = plant?.plantId ?: plantId
                 )
 
-                Toast.makeText(context, context.getString(R.string.notification_scheduled), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.notification_scheduled),
+                    Toast.LENGTH_SHORT
+                ).show()
             },
             dialogTitle = stringResource(R.string.set_up_notification),
             icon = painterResource(id = R.drawable.ic_schedule)
@@ -345,65 +349,83 @@ fun WateringNotificationItem(
 
     val interval: Int = plantWateringSchedule.daysInterval
 
-    val nextWateringDate: String =
+    val nextWateringDate = remember {
         ScheduleDateUtils().calculateNextNotificationDate(
             startDate = startDate,
             notificationTime = time,
             interval = interval.toLong(),
         )
+    }
 
-    Card(
-        modifier = modifier
-            .fillMaxSize(),
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer
-        ),
+    Box(
+        modifier = modifier.fillMaxSize()
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Row(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+        Card(
+            modifier = modifier
+                .fillMaxSize(),
+            shape = MaterialTheme.shapes.medium,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer
+            ),
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                Column(modifier = modifier.padding(4.dp)) {
-                    Text(
-                        text = plantWateringSchedule.notificationMessage,
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                    Text(
-                        text = time,
-                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                    )
-                    Text(
-                        text = "${stringResource(id = R.string.repeat_every)} $days",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                    Text(
-                        text = stringResource(R.string.next_triggering, nextWateringDate),
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Column(
+                        modifier = modifier.padding(4.dp),
+                    ) {
+                        if (plantWateringSchedule.notificationMessage.isNotBlank()
+                            || plantWateringSchedule.notificationMessage.isNotEmpty()
+                        ) {
+                            Text(
+                                text = plantWateringSchedule.notificationMessage,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+
+                        Text(
+                            text = time,
+                            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                        )
+                        Text(
+                            text = "${stringResource(id = R.string.repeat_every)} $days",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        Text(
+                            text = stringResource(R.string.next_triggering, nextWateringDate),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
                 }
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_cancel),
-                    contentDescription = stringResource(R.string.remove),
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.5f),
-                    modifier = modifier.clickable { onDeleteClicked() }
+                    painter = painterResource(id = R.drawable.ic_schedule),
+                    contentDescription = stringResource(id = R.string.schedule),
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = modifier
+                        .alpha(0.2f)
+                        .rotate(25f)
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 30.dp)
+                        .size(120.dp)
+                        .clipToBounds()
                 )
             }
-            Icon(
-                painter = painterResource(id = R.drawable.ic_schedule),
-                contentDescription = stringResource(id = R.string.schedule),
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = modifier
-                    .alpha(0.2f)
-                    .rotate(25f)
-                    .align(Alignment.CenterEnd)
-                    .padding(end = 30.dp)
-                    .size(120.dp)
-                    .clipToBounds()
-            )
         }
+        Icon(
+            painter = painterResource(id = R.drawable.ic_cancel),
+            contentDescription = stringResource(R.string.remove),
+            tint = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.5f),
+            modifier = modifier
+                .clickable { onDeleteClicked() }
+                .align(Alignment.TopEnd)
+                .padding(8.dp)
+        )
     }
 }

@@ -24,7 +24,7 @@
     <string name="updated">Оновлено</string>
     <string name="saved">Збережено</string>
     <string name="schedule">Розклад</string>
-    <string name="repeat_every">Повторення через:</string>
+    <string name="repeat_every">Інтервал:</string>
     <string name="time">Час:</string>
     <string name="choose_time">Виберіть час:</string>
     <string name="confirm">Підтвердити</string>

@@ -50,6 +50,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -179,7 +180,7 @@ fun HomeScreen(
                                 .padding(8.dp)
                         ) {
                             Column(
-                                modifier = modifier.fillMaxSize(),
+                                modifier = modifier.fillMaxSize().padding(8.dp),
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
@@ -200,6 +201,7 @@ fun HomeScreen(
                                     style = MaterialTheme.typography.titleLarge.copy(
                                         fontWeight = FontWeight.Bold,
                                     ),
+                                    textAlign = TextAlign.Center
                                 )
                             }
                         }

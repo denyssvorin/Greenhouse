@@ -1,9 +1,13 @@
 package com.example.recycleview.repo
 
 import android.app.Application
+import android.content.ContentResolver
 import android.content.ContentUris
+import android.content.Context
+import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
+import androidx.core.net.toUri
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -13,6 +17,9 @@ import com.example.recycleview.data.plant.PlantEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import javax.inject.Inject
 
 class PlantRepositoryImpl @Inject constructor(
@@ -46,8 +53,13 @@ class PlantRepositoryImpl @Inject constructor(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         id
                     )
-                    result = currentContentUri.toString()
-
+                    val byteArray =
+                        readBytesFromContentUri(context.contentResolver, currentContentUri)
+                    val localUriString = byteArray?.let {
+                        saveBytesToLocalFile(context, it, "$numericPart.png")
+                    }
+                    result = localUriString
+                        ?: "default"
                 } else {
                     Log.e("TAG", "mapPhotosFromExternalStorage: error")
                 }
@@ -56,7 +68,34 @@ class PlantRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getPagingPlants(searchQuery: String, sortOrder: SortOrder): Flow<PagingData<PlantEntity>> {
+    override fun readBytesFromContentUri(contentResolver: ContentResolver, contentUri: Uri): ByteArray? {
+        return try {
+            contentResolver.openInputStream(contentUri)?.use { inputStream ->
+                inputStream.readBytes()
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+     override fun saveBytesToLocalFile(context: Context, byteArray: ByteArray, filename: String): String? {
+        return try {
+            val file = File(context.filesDir, filename)
+            FileOutputStream(file).use { outputStream ->
+                outputStream.write(byteArray)
+            }
+            file.toUri().toString()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    override fun getPagingPlants(
+        searchQuery: String,
+        sortOrder: SortOrder
+    ): Flow<PagingData<PlantEntity>> {
         val dbLoader: PlantReposDBPageLoader = { limit, offset ->
             getPlants(limit, offset, searchQuery, sortOrder)
         }
@@ -74,9 +113,19 @@ class PlantRepositoryImpl @Inject constructor(
         ).flow
     }
 
-    private suspend fun getPlants(limit: Int, offset: Int, searchQuery: String, sortOrder: SortOrder) : List<PlantEntity> =
+    private suspend fun getPlants(
+        limit: Int,
+        offset: Int,
+        searchQuery: String,
+        sortOrder: SortOrder
+    ): List<PlantEntity> =
         withContext(Dispatchers.IO) {
-            val list = db.plantDao().getPlants(limit = limit, offset = offset, searchText = searchQuery, sortOrder = sortOrder)
+            val list = db.plantDao().getPlants(
+                limit = limit,
+                offset = offset,
+                searchText = searchQuery,
+                sortOrder = sortOrder
+            )
             return@withContext list
         }
 
