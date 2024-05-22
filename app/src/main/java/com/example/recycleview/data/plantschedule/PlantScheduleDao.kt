@@ -12,6 +12,10 @@ interface PlantScheduleDao {
 
     @Query("SELECT * FROM plant_schedule_table WHERE plantId = :currentPlantId")
     fun getPlantScheduleByPlantId(currentPlantId: Int): Flow<List<PlantWateringScheduleEntity>>
+
+    @Query("SELECT * FROM plant_schedule_table")
+    fun getAllSchedules(): List<PlantWateringScheduleEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPlantWateringSchedule(plantWateringScheduleEntity: PlantWateringScheduleEntity)
 

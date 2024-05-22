@@ -1,8 +1,8 @@
 package com.example.recycleview.data.mappers
 
 import com.example.recycleview.data.alarm.AlarmPlant
-import com.example.recycleview.data.notification.NotificationServiceItem
 import com.example.recycleview.data.notification.NotificationItem
+import com.example.recycleview.data.notification.NotificationServiceItem
 import com.example.recycleview.data.plant.PlantEntity
 import com.example.recycleview.data.plantschedule.PlantWateringScheduleEntity
 import com.example.recycleview.domain.Plant
@@ -35,6 +35,27 @@ fun PlantWateringScheduleEntity.toPlantWateringSchedule(): PlantWateringSchedule
     )
 }
 
+fun PlantWateringScheduleEntity.toAlarmPlant(
+    plantName: String,
+    plantImagePath: String?,
+): AlarmPlant {
+    return AlarmPlant(
+        scheduleId = scheduleId,
+        plantId = plantId,
+        plantName = plantName,
+        plantImagePath = plantImagePath,
+        message = notificationMessage,
+
+        firstTriggerTimeAndDateInMillis = ScheduleDateUtils().calculateNextNotificationDateLong(
+            startDate = firstTriggerDate,
+            notificationTime = time,
+            interval = daysInterval.toLong(),
+        ),
+        repeatIntervalDaysInMillis = ScheduleDateUtils().daysToMillis(
+            daysInterval
+        )
+    )
+}
 fun PlantWateringSchedule.toPlantWateringScheduleEntity(): PlantWateringScheduleEntity {
     return PlantWateringScheduleEntity(
         scheduleId = scheduleId,

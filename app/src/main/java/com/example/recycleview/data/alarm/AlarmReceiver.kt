@@ -29,6 +29,8 @@ class AlarmReceiver : BroadcastReceiver() {
         val notificationIntent = Intent(context, NotificationService::class.java).also { notificationIntent ->
             notificationIntent.putExtra(NotificationService.EXTRA_PLANT, notificationItem)
         }
-        context?.startService(notificationIntent)
+        if (context != null) {
+            NotificationService.enqueueWork(context, notificationIntent)
+        }
     }
 }

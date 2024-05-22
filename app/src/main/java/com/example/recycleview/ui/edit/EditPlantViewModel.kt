@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -29,8 +28,8 @@ class EditPlantViewModel @Inject constructor(
     val plantImageUri: StateFlow<String?> = _plantImageUri.asStateFlow()
 
     fun getPlant(id: Int) {
-        viewModelScope.launch {
-            val plant = plantDao.getSinglePlant(id).first()
+        viewModelScope.launch(Dispatchers.IO) {
+            val plant = plantDao.getSinglePlant(id)
 
             _plantImageUri.value = plant.plantImagePath
             plantName = plant.plantName

@@ -1,8 +1,5 @@
 package com.example.recycleview.data.notification
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
 data class NotificationItem(
     val scheduleId: String,
     val plantImagePath: String?,

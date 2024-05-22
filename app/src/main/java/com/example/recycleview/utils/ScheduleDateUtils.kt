@@ -91,6 +91,32 @@ class ScheduleDateUtils {
         return nextNotificationDate.format(formatter)
     }
 
+    fun calculateNextNotificationDateLong(
+        startDate: String,
+        notificationTime: String,
+        interval: Long
+    ): Long {
+        var nextNotificationDate: LocalDate = parseLocalDate(startDate)
+        val nextNotificationTime: LocalTime = parseLocalTime(notificationTime)
+
+        val currentDate = LocalDate.now()
+        val currentTime = LocalTime.now()
+
+        while (nextNotificationDate.isBefore(currentDate)
+            || (nextNotificationDate == currentDate && currentTime > nextNotificationTime)
+        ) {
+            nextNotificationDate = nextNotificationDate.plusDays(interval)
+        }
+
+        val nextNotificationDateTime = LocalDateTime.of(nextNotificationDate, nextNotificationTime)
+        val longValue = nextNotificationDateTime
+            .atZone(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
+
+        return longValue
+    }
+
     private fun parseLocalTime(timeString: String): LocalTime {
         val formatter = DateTimeFormatter.ofPattern("HH:mm")
         return LocalTime.parse(timeString, formatter)

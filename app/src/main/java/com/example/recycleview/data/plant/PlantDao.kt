@@ -8,7 +8,6 @@ import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
 import com.example.recycleview.data.datastore.SortOrder
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PlantDao {
@@ -33,7 +32,7 @@ interface PlantDao {
     fun getPlantsSortedZ2A(searchText: String, limit: Int, offset: Int): List<PlantEntity>
 
     @Query("SELECT * FROM plant_table WHERE plantId LIKE '%' || :id || '%'")
-    fun getSinglePlant(id: Int): Flow<PlantEntity>
+    fun getSinglePlant(id: Int): PlantEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertPlant(plantEntity: PlantEntity)
