@@ -2,7 +2,7 @@ package com.example.recycleview.data.mappers
 
 import com.example.recycleview.data.alarm.AlarmPlant
 import com.example.recycleview.data.notification.NotificationItem
-import com.example.recycleview.data.notification.NotificationServiceItem
+import com.example.recycleview.data.notification.NotificationWorkerItem
 import com.example.recycleview.data.plant.PlantEntity
 import com.example.recycleview.data.plantschedule.PlantWateringScheduleEntity
 import com.example.recycleview.domain.Plant
@@ -127,8 +127,8 @@ fun PlantScheduleData.toAlarmPlant(
     )
 }
 
-fun AlarmPlant.toNotificationServiceItem(): NotificationServiceItem {
-    return NotificationServiceItem(
+fun AlarmPlant.toNotificationServiceItem(): NotificationWorkerItem {
+    return NotificationWorkerItem(
         scheduleId = scheduleId,
         plantId = plantId,
         message = message

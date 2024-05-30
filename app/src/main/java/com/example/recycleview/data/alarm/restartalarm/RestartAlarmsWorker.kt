@@ -1,41 +1,37 @@
 package com.example.recycleview.data.alarm.restartalarm
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
-import androidx.core.app.JobIntentService
+import androidx.hilt.work.HiltWorker
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
 import com.example.recycleview.data.alarm.AlarmScheduler
 import com.example.recycleview.data.mappers.toAlarmPlant
 import com.example.recycleview.data.plant.PlantDao
 import com.example.recycleview.data.plantschedule.PlantScheduleDao
 import com.example.recycleview.data.plantschedule.PlantWateringScheduleEntity
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import javax.inject.Inject
+import kotlinx.coroutines.withContext
 
-@AndroidEntryPoint
-class RestartAlarmsService : JobIntentService() {
+@HiltWorker
+class RestartAlarmsWorker @AssistedInject constructor(
+    private val plantDao: PlantDao,
+    private val plantScheduleDao: PlantScheduleDao,
+    private val alarmScheduler: AlarmScheduler,
+    @Assisted private val context: Context,
+    @Assisted private val parameters: WorkerParameters,
+) : CoroutineWorker(context, parameters) {
 
-    private var job: Job? = null
+    override suspend fun doWork(): Result {
+        return withContext(Dispatchers.IO) {
 
-    @Inject
-    lateinit var plantScheduleDao: PlantScheduleDao
-
-    @Inject
-    lateinit var plantDao: PlantDao
-
-    @Inject
-    lateinit var alarmScheduler: AlarmScheduler
-
-    override fun onHandleWork(intent: Intent) {
-        job = CoroutineScope(Dispatchers.IO).launch {
             try {
+                Log.i(TAG, "doWork")
                 val scheduleList: List<PlantWateringScheduleEntity> =
                     plantScheduleDao.getAllSchedules()
-                Log.i("TAG", "scheduleList: $scheduleList")
+                Log.i(TAG, "scheduleList: $scheduleList")
 
                 scheduleList.forEach { plantWateringScheduleEntity: PlantWateringScheduleEntity ->
 
@@ -48,27 +44,17 @@ class RestartAlarmsService : JobIntentService() {
                         )
                     )
                 }
-
+                Result.success()
 
             } catch (e: Exception) {
                 Log.e("RestartAlarmsService", "Error accessing database", e)
-            } finally {
-                stopSelf()
+                Result.failure()
             }
+
         }
-    }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-        job?.cancel()
     }
 
     companion object {
-        const val JOB_ID = 1002
-
-        fun enqueueWork(context: Context, work: Intent) {
-            enqueueWork(context, RestartAlarmsService::class.java, JOB_ID, work)
-        }
+        private val TAG = RestartAlarmsWorker::class.qualifiedName
     }
 }

@@ -1,11 +1,9 @@
 package com.example.recycleview.data.notification
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import java.io.Serializable
 
-@Parcelize
-data class NotificationServiceItem(
+data class NotificationWorkerItem(
     val scheduleId: String,
     val plantId: Int,
     val message: String
-): Parcelable
+): Serializable

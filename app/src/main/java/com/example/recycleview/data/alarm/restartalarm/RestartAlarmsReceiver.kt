@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -13,10 +15,10 @@ class RestartAlarmsReceiver : BroadcastReceiver() {
         if (intent?.action == Intent.ACTION_BOOT_COMPLETED) {
 
             try {
-                val intentRestartAlarms = Intent(context, RestartAlarmsService::class.java)
-
+                val restartAlarmsWorkRequest = OneTimeWorkRequestBuilder<RestartAlarmsWorker>()
+                    .build()
                 if (context != null) {
-                    RestartAlarmsService.enqueueWork(context, intentRestartAlarms)
+                    WorkManager.getInstance(context).enqueue(restartAlarmsWorkRequest)
                 }
             } catch (e: Exception) {
                 Log.e("TAG", "onReceive exception: ${e.message}")

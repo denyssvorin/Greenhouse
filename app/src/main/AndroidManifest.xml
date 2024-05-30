@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.plantEntity">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -33,10 +34,6 @@
             </intent-filter>
         </activity>
         <receiver android:name="com.example.recycleview.data.alarm.AlarmReceiver" />
-        <service
-            android:name="com.example.recycleview.data.notification.NotificationService"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
         <receiver
             android:name="com.example.recycleview.data.alarm.restartalarm.RestartAlarmsReceiver"
             android:exported="false">
@@ -44,10 +41,10 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <service
-            android:name="com.example.recycleview.data.alarm.restartalarm.RestartAlarmsService"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove" />
     </application>
 
 </manifest>
