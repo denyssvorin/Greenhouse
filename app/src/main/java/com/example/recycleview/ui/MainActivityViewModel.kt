@@ -9,7 +9,6 @@ class MainViewModel : ViewModel() {
     private val _visiblePermissionDialogQueue1 = MutableLiveData<List<String>>()
     val visiblePermissionDialogQueue: LiveData<List<String>> get() = _visiblePermissionDialogQueue1
 
-
     fun dismissDialog() {
         val currentList = _visiblePermissionDialogQueue1.value.orEmpty().toMutableList()
         currentList.removeFirst()

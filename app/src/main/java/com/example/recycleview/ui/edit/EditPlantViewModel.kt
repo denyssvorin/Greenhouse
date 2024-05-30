@@ -12,8 +12,10 @@ import com.example.recycleview.repo.PlantRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -25,7 +27,13 @@ class EditPlantViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _plantImageUri = MutableStateFlow<String?>(null)
-    val plantImageUri: StateFlow<String?> = _plantImageUri.asStateFlow()
+    val plantImageUri: StateFlow<String?> = _plantImageUri
+        .asStateFlow()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            null
+        )
 
     fun getPlant(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {

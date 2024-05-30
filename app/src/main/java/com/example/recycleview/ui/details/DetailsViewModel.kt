@@ -16,8 +16,10 @@ import com.example.recycleview.domain.PlantWateringSchedule
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,11 +31,23 @@ class DetailsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _plantData = MutableStateFlow<Plant?>(null)
-    val plantData: StateFlow<Plant?> = _plantData.asStateFlow()
+    val plantData: StateFlow<Plant?> = _plantData
+        .asStateFlow()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            null
+        )
 
     private val _plantScheduleDataList = MutableStateFlow<MutableList<PlantWateringSchedule>>(mutableListOf())
     val plantScheduleDataList: StateFlow<MutableList<PlantWateringSchedule>> =
-        _plantScheduleDataList.asStateFlow()
+        _plantScheduleDataList
+            .asStateFlow()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                mutableListOf()
+            )
 
     fun getPlant(id: Int) = viewModelScope.launch(Dispatchers.IO) {
             val plant = plantDao.getSinglePlant(id).toPlant()

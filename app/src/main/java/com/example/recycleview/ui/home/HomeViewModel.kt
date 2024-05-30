@@ -16,9 +16,13 @@ import com.example.recycleview.repo.PlantRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -51,7 +55,14 @@ class HomeViewModel @Inject constructor(
     var searchText by mutableStateOf(searchQuery.value)
         private set
 
-    val state = MutableStateFlow(PlantScreenState())
+    private val _state = MutableStateFlow(PlantScreenState())
+    val state: StateFlow<PlantScreenState> = _state
+        .asStateFlow()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            PlantScreenState()
+        )
 
     init {
         viewModelScope.launch {
@@ -68,19 +79,19 @@ class HomeViewModel @Inject constructor(
     fun onAction(userAction: UserAction) {
         when (userAction) {
             UserAction.CloseIconClicked -> {
-                state.value = state.value.copy(isSearchBarVisible = false)
+                _state.value = _state.value.copy(isSearchBarVisible = false)
             }
 
             UserAction.SearchIconClicked -> {
-                state.value = state.value.copy(isSearchBarVisible = true)
+                _state.value = _state.value.copy(isSearchBarVisible = true)
             }
 
             UserAction.SortIconClicked -> {
-                state.value = state.value.copy(isSortMenuVisible = true)
+                _state.value = _state.value.copy(isSortMenuVisible = true)
             }
 
             UserAction.SortMenuDismiss -> {
-                state.value = state.value.copy(isSortMenuVisible = false)
+                _state.value = _state.value.copy(isSortMenuVisible = false)
             }
 
             is UserAction.SortItemClicked -> {
@@ -94,7 +105,7 @@ class HomeViewModel @Inject constructor(
 
     private fun sortPlantList(sortOrder: SortOrder) = viewModelScope.launch {
         preferencesManager.saveSortOrder(sortOrder)
-        state.value = state.value.copy(
+        _state.value = _state.value.copy(
             isSortMenuVisible = false
         )
     }
