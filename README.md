@@ -19,7 +19,7 @@ The mobile app will help you take care of your plants. You can add photos from t
 - Preferences DataStore
 - Jetpack Compose (Compose UI, Navigation, Paging)
 - Coroutines, Flows
-- AlarmManager
+- AlarmManager, WorkManager
 - Content Provider
 - Hilt
 - GitHub
