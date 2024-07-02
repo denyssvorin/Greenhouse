@@ -7,9 +7,9 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.recycleview.data.alarm.AlarmScheduler
 import com.example.recycleview.data.mappers.toAlarmPlant
-import com.example.recycleview.data.plant.PlantDao
-import com.example.recycleview.data.plantschedule.PlantScheduleDao
-import com.example.recycleview.data.plantschedule.PlantWateringScheduleEntity
+import com.example.recycleview.data.realm.plant.PlantDao
+import com.example.recycleview.data.realm.plantschedule.PlantScheduleDao
+import com.example.recycleview.data.realm.plantschedule.PlantScheduleEntity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
@@ -25,24 +25,30 @@ class RestartAlarmsWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, parameters) {
 
     override suspend fun doWork(): Result {
-        return withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.Main) {
 
             try {
                 Log.i(TAG, "doWork")
-                val scheduleList: List<PlantWateringScheduleEntity> =
-                    plantScheduleDao.getAllSchedules()
+
+                val scheduleList: List<PlantScheduleEntity> =
+                    plantScheduleDao
+                        .getAll()
+                        .findAllAsync()
+
                 Log.i(TAG, "scheduleList: $scheduleList")
 
-                scheduleList.forEach { plantWateringScheduleEntity: PlantWateringScheduleEntity ->
+                scheduleList.forEach { plantScheduleEntity: PlantScheduleEntity ->
 
-                    val plant = plantDao.getSinglePlant(plantWateringScheduleEntity.plantId)
+                    val plant = plantDao.getSinglePlant(plantScheduleEntity.plant?._id.toString())
 
-                    alarmScheduler.schedule(
-                        plantWateringScheduleEntity.toAlarmPlant(
-                            plantName = plant.plantName,
-                            plantImagePath = plant.plantImagePath,
+                    plant?.let {
+                        alarmScheduler.schedule(
+                            plantScheduleEntity.toAlarmPlant(
+                                plantName = plant.plantName,
+                                plantImagePath = plant.plantImagePath,
+                            )
                         )
-                    )
+                    }
                 }
                 Result.success()
 

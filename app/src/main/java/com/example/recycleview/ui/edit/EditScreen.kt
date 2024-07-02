@@ -50,12 +50,13 @@ import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.recycleview.R
-import com.example.recycleview.domain.Plant
+import com.example.recycleview.data.realm.plant.PlantEntity
+import java.util.UUID
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun EditScreen(
-    plantId: Int?,
+    plantId: String?,
     navController: NavHostController,
     viewModel: EditPlantViewModel = hiltViewModel()
 ) {
@@ -68,8 +69,6 @@ fun EditScreen(
 
         uri?.let { imageUri ->
             val newImage = imageUri.lastPathSegment.toString()
-
-            // map element to required format
             viewModel.mapPhotos(newImage)
         }
     }
@@ -79,7 +78,6 @@ fun EditScreen(
             viewModel.getPlant(plantId)
         }
     }
-
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -102,7 +100,7 @@ fun EditScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            navController.popBackStack()
+                            navController.navigateUp()
                         },
                         content = {
                             Icon(
@@ -118,12 +116,12 @@ fun EditScreen(
             FloatingActionButton(
                 onClick = {
                     viewModel.savePlant(
-                        plant = Plant(
-                            plantId = plantId,
-                            plantImagePath = plantImage.value,
-                            plantName = viewModel.plantName,
-                            plantDescription = viewModel.plantDescription,
-                        )
+                        plant = PlantEntity().apply {
+                            _id = plantId ?: UUID.randomUUID().toString()
+                            plantImagePath = plantImage.value
+                            plantName = viewModel.plantName
+                            plantDescription = viewModel.plantDescription
+                        }
                     )
                     if (plantId != null) {
                         Toast.makeText(
@@ -138,7 +136,7 @@ fun EditScreen(
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                    navController.popBackStack()
+                    navController.navigateUp()
                 },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 content = {

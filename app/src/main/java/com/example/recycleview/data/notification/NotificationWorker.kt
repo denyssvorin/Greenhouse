@@ -6,8 +6,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.recycleview.data.mappers.toNotificationItem
-import com.example.recycleview.data.mappers.toPlant
-import com.example.recycleview.data.plant.PlantDao
+import com.example.recycleview.data.realm.plant.PlantDao
 import com.google.gson.Gson
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -22,7 +21,7 @@ class NotificationWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, parameters) {
 
     override suspend fun doWork(): Result {
-        return withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.Main) {
 
             val notificationItemString = parameters.inputData.getString(KEY_DATA)
             val notificationWorkerItem =
@@ -30,17 +29,23 @@ class NotificationWorker @AssistedInject constructor(
 
             try {
                 val plant =
-                    plantDao.getSinglePlant(notificationWorkerItem.plantId).toPlant()
-                val notificationItem = plant.toNotificationItem(
-                    scheduleId = notificationWorkerItem.scheduleId,
-                    notificationMessage = notificationWorkerItem.message
-                )
+                    plantDao.getSinglePlant(notificationWorkerItem.plantId)
 
-                val plantWateringNotification = NotificationManager(context)
-                plantWateringNotification.createNotificationChannels()
-                plantWateringNotification.createNotification(notificationItem)
+                if (plant != null) {
+                    val notificationItem = plant.toNotificationItem(
+                        scheduleId = notificationWorkerItem.scheduleId,
+                        notificationMessage = notificationWorkerItem.message
+                    )
 
-                Result.success()
+                    val plantWateringNotification = NotificationManager(context)
+                    plantWateringNotification.createNotificationChannels()
+                    plantWateringNotification.createNotification(notificationItem)
+
+                    Result.success()
+                } else {
+                    Result.failure()
+                }
+
             } catch (e: Exception) {
                 Log.e("NotificationWorker", "Error accessing database", e)
                 Result.failure()

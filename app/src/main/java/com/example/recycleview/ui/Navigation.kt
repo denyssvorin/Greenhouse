@@ -1,5 +1,11 @@
 package com.example.recycleview.ui
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -17,12 +23,34 @@ fun Navigation() {
         navController = navController,
         startDestination = ScreenNavigation.HomeScreen.route
     ) {
-        composable(route = ScreenNavigation.HomeScreen.route) {
+        composable(
+            route = ScreenNavigation.HomeScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(durationMillis = 400)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(durationMillis = 400)
+                )
+            }
+        ) {
             HomeScreen(navController = navController)
         }
 
         composable(
-            route = ScreenNavigation.EditScreen.route
+            route = ScreenNavigation.EditScreen.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(durationMillis = 400)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(durationMillis = 400)
+                )
+            }
         ) {
             EditScreen(plantId = null, navController = navController)
         }
@@ -31,11 +59,33 @@ fun Navigation() {
             route = ScreenNavigation.EditScreen.route + "/{plant_id}",
             arguments = listOf(
                 navArgument("plant_id") {
-                    type = NavType.IntType
+                    type = NavType.StringType
                 }
-            )
+            ),
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { 1000 },
+                    animationSpec = tween(
+                        durationMillis = 400,
+                        easing = FastOutSlowInEasing
+                    )
+                ) + fadeIn(
+                    animationSpec = tween(durationMillis = 400)
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally (
+                    targetOffsetX = { 1000 },
+                    animationSpec = tween(
+                        durationMillis = 400,
+                        easing = FastOutSlowInEasing
+                    )
+                ) + fadeOut(
+                    animationSpec = tween(durationMillis = 400)
+                )
+            },
         ) { navBackStackEntry ->
-            navBackStackEntry.arguments?.getInt("plant_id")?.let { plantId ->
+            navBackStackEntry.arguments?.getString("plant_id")?.let { plantId ->
                 EditScreen(plantId = plantId, navController = navController)
             }
         }
@@ -44,11 +94,21 @@ fun Navigation() {
             route = ScreenNavigation.DetailsScreen.route + "/{plant_id}",
             arguments = listOf(
                 navArgument("plant_id") {
-                    type = NavType.IntType
+                    type = NavType.StringType
                 }
-            )
+            ),
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(durationMillis = 400)
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(durationMillis = 400)
+                )
+            }
         ) { navBackStackEntry ->
-            navBackStackEntry.arguments?.getInt("plant_id")?.let {
+            navBackStackEntry.arguments?.getString("plant_id")?.let {
                 DetailsScreen(plantId = it, navController = navController)
             }
         }

@@ -2,19 +2,19 @@ package com.example.recycleview.di
 
 import android.app.Application
 import android.content.Context
-import androidx.room.Room
 import com.example.recycleview.data.alarm.AlarmScheduler
 import com.example.recycleview.data.alarm.AlarmSchedulerImpl
 import com.example.recycleview.data.datastore.PreferencesManager
 import com.example.recycleview.data.datastore.PreferencesManagerImpl
-import com.example.recycleview.data.plant.PlantDatabase
-import com.example.recycleview.repo.PlantRepository
-import com.example.recycleview.repo.PlantRepositoryImpl
+import com.example.recycleview.data.imageconverter.PlantImageConverter
+import com.example.recycleview.data.imageconverter.PlantImageConverterImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import javax.inject.Qualifier
@@ -26,15 +26,17 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(app: Application) =
-        Room.databaseBuilder(app, PlantDatabase::class.java, "plant_database")
+    fun provideRealm(@ApplicationContext context: Context): Realm {
+        Realm.init(context)
+
+        val realmConfig = RealmConfiguration.Builder()
+            .name("plant.realm")
+            .schemaVersion(1)
             .build()
 
-    @Provides
-    fun providePlantDao(db: PlantDatabase) = db.plantDao()
-
-    @Provides
-    fun providePlantScheduleDao(db: PlantDatabase) = db.plantScheduleDao()
+        Realm.setDefaultConfiguration(realmConfig)
+        return Realm.getDefaultInstance()
+    }
 
     @ApplicationScope
     @Provides
@@ -42,8 +44,8 @@ object AppModule {
     fun provideApplicationScope() = CoroutineScope(SupervisorJob())
 
     @Provides
-    fun provideRepo(context: Application, db: PlantDatabase): PlantRepository {
-        return PlantRepositoryImpl(context, db)
+    fun provideImageConverter(context: Application): PlantImageConverter {
+        return PlantImageConverterImpl(context)
     }
 
     @Provides

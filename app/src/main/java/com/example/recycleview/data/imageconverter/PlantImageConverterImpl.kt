@@ -1,4 +1,4 @@
-package com.example.recycleview.repo
+package com.example.recycleview.data.imageconverter
 
 import android.app.Application
 import android.content.ContentResolver
@@ -8,24 +8,16 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import androidx.core.net.toUri
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import com.example.recycleview.data.datastore.SortOrder
-import com.example.recycleview.data.plant.PlantDatabase
-import com.example.recycleview.data.plant.PlantEntity
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import javax.inject.Inject
 
-class PlantRepositoryImpl @Inject constructor(
+class PlantImageConverterImpl @Inject constructor(
     private val context: Application,
-    private val db: PlantDatabase
-) : PlantRepository {
+) : PlantImageConverter {
     override suspend fun mapPhotosFromExternalStorage(imagePath: String): String {
         return withContext(Dispatchers.IO) {
             val numericPart = imagePath.replace(Regex("[^0-9]"), "")
@@ -90,46 +82,5 @@ class PlantRepositoryImpl @Inject constructor(
             e.printStackTrace()
             null
         }
-    }
-
-    override fun getPagingPlants(
-        searchQuery: String,
-        sortOrder: SortOrder
-    ): Flow<PagingData<PlantEntity>> {
-        val dbLoader: PlantReposDBPageLoader = { limit, offset ->
-            getPlants(limit, offset, searchQuery, sortOrder)
-        }
-        return Pager(
-            config = PagingConfig(
-                pageSize = PAGE_SIZE,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = {
-                PlantPagingSource(
-                    dbLoader,
-                    PAGE_SIZE
-                )
-            }
-        ).flow
-    }
-
-    private suspend fun getPlants(
-        limit: Int,
-        offset: Int,
-        searchQuery: String,
-        sortOrder: SortOrder
-    ): List<PlantEntity> =
-        withContext(Dispatchers.IO) {
-            val list = db.plantDao().getPlants(
-                limit = limit,
-                offset = offset,
-                searchText = searchQuery,
-                sortOrder = sortOrder
-            )
-            return@withContext list
-        }
-
-    companion object {
-        const val PAGE_SIZE = 20
     }
 }

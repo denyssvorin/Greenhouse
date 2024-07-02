@@ -31,11 +31,11 @@ class AlarmSchedulerImpl @Inject constructor(
         )
     }
 
-    override fun cancel(alarmItem: AlarmPlant) {
+    override fun cancel(scheduleId: Int) {
         alarmManager.cancel(
             PendingIntent.getBroadcast(
                 context,
-                alarmItem.scheduleId.hashCode(),
+                scheduleId,
                 Intent(context, AlarmReceiver::class.java),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )

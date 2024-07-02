@@ -38,8 +38,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recycleview.R
 import com.example.recycleview.domain.PlantScheduleData
-import com.example.recycleview.utils.ScheduleDateUtils
 import com.example.recycleview.utils.formatDays
+import com.example.recycleview.utils.localDateToMilliseconds
+import com.example.recycleview.utils.localDateToString
+import com.example.recycleview.utils.localTimeToString
+import com.example.recycleview.utils.millisToLocalDate
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -74,26 +77,23 @@ fun AlarmScheduleDialog(
 
     val formattedTimeString by remember {
         derivedStateOf {
-            ScheduleDateUtils().localTimeToString(pickedTime)
+            localTimeToString(pickedTime)
         }
     }
 
     var pickedDate by rememberSaveable {
-        mutableStateOf(
-            // initial value
-            LocalDate.now()
-        )
+        mutableStateOf(LocalDate.now())
     }
 
     val pickedDateString by remember {
         derivedStateOf {
-            ScheduleDateUtils().localDateToString(pickedDate)
+            localDateToString(pickedDate)
         }
     }
 
     val pickedDateInMillis by remember {
         derivedStateOf {
-            ScheduleDateUtils().localDateToMilliseconds(pickedDate)
+            localDateToMilliseconds(pickedDate)
         }
     }
 
@@ -129,9 +129,9 @@ fun AlarmScheduleDialog(
             onCancel = { openDatePickerDialog.value = false },
             onConfirm = { date: DatePickerState ->
 
-                pickedDate = ScheduleDateUtils().millisToLocalDate(
+                pickedDate = millisToLocalDate(
                     date.selectedDateMillis
-                        ?: ScheduleDateUtils().localDateToMilliseconds(LocalDate.now())
+                        ?: localDateToMilliseconds(LocalDate.now())
                 )
 
                 openDatePickerDialog.value = false

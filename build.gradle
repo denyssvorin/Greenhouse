@@ -16,7 +16,7 @@ buildscript {
         dataStoreVersion = "1.1.0-alpha01"
         espressoVersion = "3.5.1"
         fragmentVersion = "1.5.5"
-        gradleVersion = '7.4.2'
+        gradleVersion = '8.3.0'
         hiltAndroidXVersion = "1.2.0"
         hiltVersion = "2.51.1"
         junitVersion = "4.13.2"
@@ -39,6 +39,9 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
+
+        classpath "io.realm:realm-gradle-plugin:10.15.1"
+//        classpath "io.realm.kotlin:gradle-plugin:1.16.0"
 //        classpath 'com.google.gms:google-services:4.3.15'
     }
 }

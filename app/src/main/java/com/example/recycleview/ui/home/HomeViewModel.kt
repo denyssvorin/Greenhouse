@@ -5,14 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.map
 import com.example.recycleview.data.datastore.PreferencesManager
 import com.example.recycleview.data.datastore.SortOrder
-import com.example.recycleview.data.mappers.toPlant
-import com.example.recycleview.data.plant.PlantEntity
-import com.example.recycleview.domain.Plant
-import com.example.recycleview.repo.PlantRepository
+import com.example.recycleview.data.realm.plant.PlantDao
+import com.example.recycleview.data.realm.plant.PlantEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,14 +17,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: PlantRepository,
+    private val plantDao: PlantDao,
     private val preferencesManager: PreferencesManager
 ) : ViewModel() {
 
@@ -36,32 +31,28 @@ class HomeViewModel @Inject constructor(
 
     private val preferencesFlow = preferencesManager.preferencesFlow
 
-    private val _plantEntityPagingFlow: Flow<PagingData<PlantEntity>> = combine(
+    private val _plantFlow: Flow<List<PlantEntity>?> = combine(
         searchQuery,
         preferencesFlow
     ) { query, filterPreferences ->
         Pair(query, filterPreferences)
     }.flatMapLatest { (query, filterPreferences) ->
-        repository.getPagingPlants(query, filterPreferences.sortOrder)
+        plantDao.getAllPlants(query, filterPreferences.sortOrder)
     }
 
-    val plantPagingFlow: Flow<PagingData<Plant>> =
-        _plantEntityPagingFlow.map { pagingData: PagingData<PlantEntity> ->
-            pagingData.map { data: PlantEntity ->
-                data.toPlant()
-            }
-        }
+    val plantFlow: StateFlow<List<PlantEntity>?> =
+        _plantFlow.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     var searchText by mutableStateOf(searchQuery.value)
         private set
 
-    private val _state = MutableStateFlow(PlantScreenState())
-    val state: StateFlow<PlantScreenState> = _state
+    private val _topAppBarState = MutableStateFlow(PlantScreenTopAppBarState())
+    val topAppBarState: StateFlow<PlantScreenTopAppBarState> = _topAppBarState
         .asStateFlow()
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
-            PlantScreenState()
+            PlantScreenTopAppBarState()
         )
 
     init {
@@ -79,19 +70,19 @@ class HomeViewModel @Inject constructor(
     fun onAction(userAction: UserAction) {
         when (userAction) {
             UserAction.CloseIconClicked -> {
-                _state.value = _state.value.copy(isSearchBarVisible = false)
+                _topAppBarState.value = _topAppBarState.value.copy(isSearchBarVisible = false)
             }
 
             UserAction.SearchIconClicked -> {
-                _state.value = _state.value.copy(isSearchBarVisible = true)
+                _topAppBarState.value = _topAppBarState.value.copy(isSearchBarVisible = true)
             }
 
             UserAction.SortIconClicked -> {
-                _state.value = _state.value.copy(isSortMenuVisible = true)
+                _topAppBarState.value = _topAppBarState.value.copy(isSortMenuVisible = true)
             }
 
             UserAction.SortMenuDismiss -> {
-                _state.value = _state.value.copy(isSortMenuVisible = false)
+                _topAppBarState.value = _topAppBarState.value.copy(isSortMenuVisible = false)
             }
 
             is UserAction.SortItemClicked -> {
@@ -105,9 +96,13 @@ class HomeViewModel @Inject constructor(
 
     private fun sortPlantList(sortOrder: SortOrder) = viewModelScope.launch {
         preferencesManager.saveSortOrder(sortOrder)
-        _state.value = _state.value.copy(
+        _topAppBarState.value = _topAppBarState.value.copy(
             isSortMenuVisible = false
         )
+    }
+
+    fun deleteSelectedPlants(plantId: String) = viewModelScope.launch {
+        plantDao.deletePlant(plantId)
     }
 }
 
@@ -124,7 +119,7 @@ enum class SortType {
     Z2A
 }
 
-data class PlantScreenState(
+data class PlantScreenTopAppBarState(
     val isSearchBarVisible: Boolean = false,
     val isSortMenuVisible: Boolean = false,
 )

@@ -3,118 +3,62 @@ package com.example.recycleview.data.mappers
 import com.example.recycleview.data.alarm.AlarmPlant
 import com.example.recycleview.data.notification.NotificationItem
 import com.example.recycleview.data.notification.NotificationWorkerItem
-import com.example.recycleview.data.plant.PlantEntity
-import com.example.recycleview.data.plantschedule.PlantWateringScheduleEntity
-import com.example.recycleview.domain.Plant
+import com.example.recycleview.data.realm.plant.PlantEntity
+import com.example.recycleview.data.realm.plantschedule.PlantScheduleEntity
 import com.example.recycleview.domain.PlantScheduleData
-import com.example.recycleview.domain.PlantWateringSchedule
-import com.example.recycleview.utils.ScheduleDateUtils
+import com.example.recycleview.utils.calculateNextNotificationDateLong
+import com.example.recycleview.utils.daysToMillis
+import com.example.recycleview.utils.localDateToString
+import com.example.recycleview.utils.localTimeToString
 
-fun PlantScheduleData.toPlantWateringScheduleEntity(
-    scheduleId: String,
-    plantId: Int
-): PlantWateringScheduleEntity {
-    return PlantWateringScheduleEntity(
-        scheduleId = scheduleId,
-        plantId = plantId,
-        notificationMessage = notificationMessage,
-        time = ScheduleDateUtils().localTimeToString(time),
-        daysInterval = daysInterval,
-        firstTriggerDate = ScheduleDateUtils().localDateToString(firstTriggerDate)
-    )
+fun PlantScheduleData.toPlantScheduleEntity(scheduleId: String): PlantScheduleEntity {
+    return PlantScheduleEntity().apply {
+        _id = scheduleId
+        notificationMessage = this@toPlantScheduleEntity.notificationMessage
+        time = localTimeToString(this@toPlantScheduleEntity.time)
+        daysInterval = this@toPlantScheduleEntity.daysInterval
+        firstTriggerDate = localDateToString(this@toPlantScheduleEntity.firstTriggerDate)
+    }
 }
 
-fun PlantWateringScheduleEntity.toPlantWateringSchedule(): PlantWateringSchedule {
-    return PlantWateringSchedule(
-        scheduleId = scheduleId,
-        plantId = plantId,
-        notificationMessage = notificationMessage,
-        time = time,
-        daysInterval = daysInterval,
-        firstTriggerDate = firstTriggerDate
-    )
-}
-
-fun PlantWateringScheduleEntity.toAlarmPlant(
+fun PlantScheduleEntity.toAlarmPlant(
     plantName: String,
     plantImagePath: String?,
 ): AlarmPlant {
     return AlarmPlant(
-        scheduleId = scheduleId,
-        plantId = plantId,
+        scheduleId = _id,
+        plantId = plant?._id.toString(),
         plantName = plantName,
         plantImagePath = plantImagePath,
         message = notificationMessage,
 
-        firstTriggerTimeAndDateInMillis = ScheduleDateUtils().calculateNextNotificationDateLong(
+        firstTriggerTimeAndDateInMillis = calculateNextNotificationDateLong(
             startDate = firstTriggerDate,
             notificationTime = time,
-            interval = daysInterval.toLong(),
+            interval = daysInterval?.toLong()
+                ?: (1 * 60 * 1000L), // default interval 24h
         ),
-        repeatIntervalDaysInMillis = ScheduleDateUtils().daysToMillis(
-            daysInterval
+        repeatIntervalDaysInMillis = daysToMillis(
+            daysInterval ?: 1
         )
-    )
-}
-fun PlantWateringSchedule.toPlantWateringScheduleEntity(): PlantWateringScheduleEntity {
-    return PlantWateringScheduleEntity(
-        scheduleId = scheduleId,
-        plantId = plantId,
-        notificationMessage = notificationMessage,
-        time = time,
-        daysInterval = daysInterval,
-        firstTriggerDate = firstTriggerDate
-    )
-}
-
-fun PlantWateringSchedule.toAlarmPlantDeletion(): AlarmPlant {
-    return AlarmPlant(
-        scheduleId = scheduleId,
-        plantId = plantId,
-        plantName = "",
-        plantImagePath = "",
-        message = "",
-        firstTriggerTimeAndDateInMillis = 0L,
-        repeatIntervalDaysInMillis = 0L
-    )
-}
-
-fun PlantEntity.toPlant(): Plant {
-    return Plant(
-        plantId = plantId,
-        plantImagePath = plantImagePath,
-        plantName = plantName,
-        plantDescription = plantDescription
-    )
-}
-
-fun Plant.toPlantEntity(): PlantEntity {
-    return PlantEntity(
-        plantId = plantId,
-        plantImagePath = plantImagePath,
-        plantName = plantName,
-        plantDescription = plantDescription
     )
 }
 
 fun PlantScheduleData.toAlarmPlant(
     scheduleId: String,
-    plantId: Int,
+    plantId: String,
     plantName: String,
     plantImagePath: String?,
 ): AlarmPlant {
-    val triggerTimeInMillis =
-        ScheduleDateUtils().localTimeToMilliseconds(time)
-    val firstTriggerDateInMillis =
-        ScheduleDateUtils().localDateToMilliseconds(firstTriggerDate)
 
-    val firstTriggerMillis = ScheduleDateUtils().combineDateAndTime(
-        dateInMillis = firstTriggerDateInMillis,
-        timeInMillis = triggerTimeInMillis
+    val firstTriggerMillis = calculateNextNotificationDateLong(
+        startDate = firstTriggerDate,
+        notificationTime = time,
+        interval = daysInterval.toLong()
     )
 
-    val daysRepeatIntervalInMillis =
-        ScheduleDateUtils().daysToMillis(daysInterval)
+
+    val daysRepeatIntervalInMillis = daysToMillis(daysInterval)
 
     return AlarmPlant(
         scheduleId = scheduleId,
@@ -135,7 +79,7 @@ fun AlarmPlant.toNotificationServiceItem(): NotificationWorkerItem {
     )
 }
 
-fun Plant.toNotificationItem(scheduleId: String, notificationMessage: String): NotificationItem {
+fun PlantEntity.toNotificationItem(scheduleId: String, notificationMessage: String): NotificationItem {
     return NotificationItem(
         scheduleId = scheduleId,
         plantImagePath = plantImagePath,

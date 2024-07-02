@@ -5,6 +5,9 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'androidx.navigation.safeargs.kotlin'
+    id 'realm-android'
+//    id 'io.realm.kotlin'
+
 //    id 'com.google.gms.google-services'
 }
 
@@ -60,19 +63,20 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
 
     // Compose
-    def composeBom = platform('androidx.compose:compose-bom:2024.02.00')
+    def composeBom = platform('androidx.compose:compose-bom:2024.06.00')
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
-    implementation "androidx.compose.runtime:runtime:1.6.1"
-    implementation "androidx.compose.ui:ui:1.6.1"
-    implementation "androidx.compose.foundation:foundation:1.6.1"
-    implementation "androidx.compose.foundation:foundation-layout:1.6.1"
-    implementation "androidx.compose.material:material:1.6.1"
-    implementation "androidx.compose.runtime:runtime-livedata:1.6.1"
-    implementation "androidx.compose.ui:ui-tooling:1.6.1"
-    implementation "androidx.compose.material3:material3:1.2.0-rc01"
-    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.8.0"
+    implementation "androidx.compose.runtime:runtime:1.6.8"
+    implementation "androidx.compose.ui:ui:1.6.8"
+    implementation "androidx.compose.foundation:foundation:1.6.8"
+    implementation "androidx.compose.foundation:foundation-layout:1.6.8"
+    implementation "androidx.compose.material:material:1.6.8"
+    implementation "androidx.compose.runtime:runtime-livedata:1.6.8"
+    implementation "androidx.compose.ui:ui-tooling:1.6.8"
+    implementation "androidx.compose.material3:material3:1.2.1"
+
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.8.2"
 
 
 
@@ -142,6 +146,10 @@ dependencies {
 
     // Gson
     implementation 'com.google.code.gson:gson:2.10.1'
+
+    // Realm
+//    implementation "io.realm.kotlin:library-base:1.16.0"
+    implementation 'io.realm:realm-android-library:10.15.1'
 }
 
 kapt {

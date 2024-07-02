@@ -42,6 +42,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.recycleview.R
+import com.example.recycleview.ui.dialogs.NotificationPermissionTextProvider
+import com.example.recycleview.ui.dialogs.PermissionDialog
+import com.example.recycleview.ui.dialogs.ReadExternalStoragePermissionTextProvider
+import com.example.recycleview.ui.dialogs.ReadMediaImagesPermissionTextProvider
 import com.example.recycleview.ui.ui.theme.PlantTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay

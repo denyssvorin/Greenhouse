@@ -5,10 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.recycleview.data.mappers.toPlantEntity
-import com.example.recycleview.data.plant.PlantDao
-import com.example.recycleview.domain.Plant
-import com.example.recycleview.repo.PlantRepository
+import com.example.recycleview.data.imageconverter.PlantImageConverter
+import com.example.recycleview.data.realm.plant.PlantDao
+import com.example.recycleview.data.realm.plant.PlantEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,13 +16,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class EditPlantViewModel @Inject constructor(
     private val plantDao: PlantDao,
-    private val repository: PlantRepository
+    private val repository: PlantImageConverter
 ) : ViewModel() {
 
     private val _plantImageUri = MutableStateFlow<String?>(null)
@@ -35,21 +33,19 @@ class EditPlantViewModel @Inject constructor(
             null
         )
 
-    fun getPlant(id: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun getPlant(id: String) {
+        viewModelScope.launch {
             val plant = plantDao.getSinglePlant(id)
 
-            _plantImageUri.value = plant.plantImagePath
-            plantName = plant.plantName
-            plantDescription = plant.plantDescription
+            _plantImageUri.value = plant?.plantImagePath
+            plantName = plant?.plantName ?: ""
+            plantDescription = plant?.plantDescription ?: ""
         }
     }
 
-    fun savePlant(plant: Plant) {
+    fun savePlant(plant: PlantEntity) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                plantDao.upsertPlant(plant.toPlantEntity())
-            }
+            plantDao.upsertPlant(plant)
         }
     }
 
@@ -66,7 +62,7 @@ class EditPlantViewModel @Inject constructor(
         plantDescription = text
     }
 
-    fun mapPhotos(imagePath: String) = viewModelScope.launch {
+    fun mapPhotos(imagePath: String) = viewModelScope.launch(Dispatchers.IO) {
         val photo = repository.mapPhotosFromExternalStorage(imagePath)
         _plantImageUri.value = photo
     }
