@@ -15,9 +15,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
@@ -38,11 +35,6 @@ object AppModule {
         return Realm.getDefaultInstance()
     }
 
-    @ApplicationScope
-    @Provides
-    @Singleton
-    fun provideApplicationScope() = CoroutineScope(SupervisorJob())
-
     @Provides
     fun provideImageConverter(context: Application): PlantImageConverter {
         return PlantImageConverterImpl(context)
@@ -56,7 +48,3 @@ object AppModule {
     fun provideAlarmScheduler(@ApplicationContext context: Context): AlarmScheduler =
         AlarmSchedulerImpl(context)
 }
-
-@Retention(AnnotationRetention.RUNTIME)
-@Qualifier
-annotation class ApplicationScope
