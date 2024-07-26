@@ -35,6 +35,12 @@ private fun millisToLocalDateWithFormatter(
 
 
 fun localDateToString(date: LocalDate): String {
+    val dateFormatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM, yyyy", Locale.ROOT)
+    val dateInMillis = millisToLocalDateWithFormatter(date, dateFormatter)
+    return dateFormatter.format(dateInMillis)
+}
+
+fun localDateToStringForUI(date: LocalDate): String {
     val dateFormatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM, yyyy", Locale.getDefault())
     val dateInMillis = millisToLocalDateWithFormatter(date, dateFormatter)
     return dateFormatter.format(dateInMillis)
@@ -45,26 +51,9 @@ fun localDateToMilliseconds(localDate: LocalDate): Long {
     return startOfDay.toInstant().toEpochMilli()
 }
 
-fun localTimeToMilliseconds(localTime: LocalTime): Long {
-    val startOfDay = LocalDate.now().atTime(localTime)
-    return startOfDay.toInstant(ZoneId.systemDefault().rules.getOffset(Instant.now()))
-        .toEpochMilli()
-}
-
-
 fun localTimeToString(localTime: LocalTime): String {
     val formatter = DateTimeFormatter.ofPattern("HH:mm")
     return formatter.format(localTime)
-}
-
-fun combineDateAndTime(dateInMillis: Long, timeInMillis: Long): Long {
-    val date = Instant.ofEpochMilli(dateInMillis).atZone(ZoneId.systemDefault()).toLocalDate()
-    val time = Instant.ofEpochMilli(timeInMillis).atZone(ZoneId.systemDefault()).toLocalTime()
-    val combinedDateTime = LocalDateTime.of(date, time)
-    return combinedDateTime
-        .atZone(ZoneId.systemDefault())
-        .toInstant()
-        .toEpochMilli()
 }
 
 fun daysToMillis(days: Int): Long = 1000L * 60 * 60 * 24 * days
@@ -85,7 +74,7 @@ fun calculateNextNotificationDate(
     ) {
         nextNotificationDate = nextNotificationDate.plusDays(interval)
     }
-    val formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM, yyyy")
+    val formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM, yyyy", Locale.getDefault())
     return nextNotificationDate.format(formatter)
 }
 
@@ -147,7 +136,7 @@ private fun parseLocalTime(timeString: String): LocalTime {
 }
 
 private fun parseLocalDate(dateString: String): LocalDate {
-    val formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM, yyyy", Locale.getDefault())
+    val formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM, yyyy", Locale.ROOT)
     return LocalDate.parse(dateString, formatter)
 }
 

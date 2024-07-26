@@ -12,9 +12,8 @@ import com.example.recycleview.data.alarm.AlarmSchedulerImpl.Companion.EXTRA_NOT
 import com.example.recycleview.data.notification.NotificationWorker
 import com.example.recycleview.data.notification.NotificationWorkerItem
 import com.google.gson.Gson
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
+//@AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {

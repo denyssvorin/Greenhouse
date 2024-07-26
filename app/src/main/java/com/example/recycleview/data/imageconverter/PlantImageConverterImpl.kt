@@ -13,9 +13,8 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import javax.inject.Inject
 
-class PlantImageConverterImpl @Inject constructor(
+class PlantImageConverterImpl constructor(
     private val context: Application,
 ) : PlantImageConverter {
     override suspend fun mapPhotosFromExternalStorage(imagePath: String): String {

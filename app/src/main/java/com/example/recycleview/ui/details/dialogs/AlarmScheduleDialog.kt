@@ -40,7 +40,7 @@ import com.example.recycleview.R
 import com.example.recycleview.domain.PlantScheduleData
 import com.example.recycleview.utils.formatDays
 import com.example.recycleview.utils.localDateToMilliseconds
-import com.example.recycleview.utils.localDateToString
+import com.example.recycleview.utils.localDateToStringForUI
 import com.example.recycleview.utils.localTimeToString
 import com.example.recycleview.utils.millisToLocalDate
 import java.time.Instant
@@ -87,7 +87,7 @@ fun AlarmScheduleDialog(
 
     val pickedDateString by remember {
         derivedStateOf {
-            localDateToString(pickedDate)
+            localDateToStringForUI(pickedDate)
         }
     }
 

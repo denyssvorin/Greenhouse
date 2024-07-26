@@ -3,7 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-parcelize'
     id 'kotlin-kapt'
-    id 'dagger.hilt.android.plugin'
+//    id 'dagger.hilt.android.plugin'
     id 'androidx.navigation.safeargs.kotlin'
     id 'realm-android'
 //    id 'io.realm.kotlin'
@@ -91,7 +91,7 @@ dependencies {
     implementation "androidx.navigation:navigation-compose:2.7.7"
 
     // Hilt Compose
-    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
+//    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
 
     // Permissions Compose
     implementation "com.google.accompanist:accompanist-permissions:0.35.0-alpha"
@@ -129,11 +129,11 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
     // Dagger Hilt
-    implementation "com.google.dagger:hilt-android:$hiltVersion"
-    kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
-    kapt "androidx.hilt:hilt-compiler:$hiltAndroidXVersion"
-    implementation 'androidx.hilt:hilt-common:1.2.0'
-    implementation "androidx.hilt:hilt-work:1.2.0"
+//    implementation "com.google.dagger:hilt-android:$hiltVersion"
+//    kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
+//    kapt "androidx.hilt:hilt-compiler:$hiltAndroidXVersion"
+//    implementation 'androidx.hilt:hilt-common:1.2.0'
+//    implementation "androidx.hilt:hilt-work:1.2.0"
 
     // DataStore
     implementation "androidx.datastore:datastore-preferences:$dataStoreVersion"
@@ -150,6 +150,13 @@ dependencies {
     // Realm
 //    implementation "io.realm.kotlin:library-base:1.16.0"
     implementation 'io.realm:realm-android-library:10.15.1'
+
+    // Koin
+    implementation(platform("io.insert-koin:koin-bom:$koinVersion"))
+    implementation("io.insert-koin:koin-core")
+    implementation("io.insert-koin:koin-android")
+    implementation("io.insert-koin:koin-androidx-compose")
+    implementation("io.insert-koin:koin-androidx-workmanager")
 }
 
 kapt {

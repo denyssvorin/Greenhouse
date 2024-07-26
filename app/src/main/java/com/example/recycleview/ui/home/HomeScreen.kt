@@ -81,7 +81,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toIntRect
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.recycleview.R
@@ -90,12 +89,13 @@ import com.example.recycleview.ui.ScreenNavigation
 import com.example.recycleview.ui.dialogs.DeleteDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewModel: HomeViewModel = hiltViewModel(),
+    viewModel: HomeViewModel = koinViewModel(),
 ) {
     val plantList = viewModel.plantFlow.collectAsStateWithLifecycle().value
 

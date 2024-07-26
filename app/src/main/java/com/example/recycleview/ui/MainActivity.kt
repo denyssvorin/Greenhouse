@@ -47,14 +47,11 @@ import com.example.recycleview.ui.dialogs.PermissionDialog
 import com.example.recycleview.ui.dialogs.ReadExternalStoragePermissionTextProvider
 import com.example.recycleview.ui.dialogs.ReadMediaImagesPermissionTextProvider
 import com.example.recycleview.ui.ui.theme.PlantTheme
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

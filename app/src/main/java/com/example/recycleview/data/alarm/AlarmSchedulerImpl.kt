@@ -5,10 +5,9 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.example.recycleview.data.mappers.toNotificationServiceItem
-import javax.inject.Inject
 
 
-class AlarmSchedulerImpl @Inject constructor(
+class AlarmSchedulerImpl (
     private val context: Context
 ) : AlarmScheduler {
 

@@ -9,7 +9,6 @@ import com.example.recycleview.data.datastore.PreferencesManager
 import com.example.recycleview.data.datastore.SortOrder
 import com.example.recycleview.data.realm.plant.PlantDao
 import com.example.recycleview.data.realm.plant.PlantEntity
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,10 +18,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModel (
     private val plantDao: PlantDao,
     private val preferencesManager: PreferencesManager
 ) : ViewModel() {

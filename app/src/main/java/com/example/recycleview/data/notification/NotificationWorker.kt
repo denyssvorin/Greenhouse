@@ -2,22 +2,20 @@ package com.example.recycleview.data.notification
 
 import android.content.Context
 import android.util.Log
-import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.recycleview.data.mappers.toNotificationItem
 import com.example.recycleview.data.realm.plant.PlantDao
 import com.google.gson.Gson
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-@HiltWorker
-class NotificationWorker @AssistedInject constructor(
+class NotificationWorker constructor(
     private val plantDao: PlantDao,
-    @Assisted private val context: Context,
-    @Assisted private val parameters: WorkerParameters
+
+    // AssistedInject
+    private val context: Context,
+    private val parameters: WorkerParameters
 ) : CoroutineWorker(context, parameters) {
 
     override suspend fun doWork(): Result {

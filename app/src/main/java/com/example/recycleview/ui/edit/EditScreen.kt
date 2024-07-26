@@ -44,13 +44,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.recycleview.R
 import com.example.recycleview.data.realm.plant.PlantEntity
+import org.koin.androidx.compose.koinViewModel
 import java.util.UUID
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
@@ -58,7 +58,7 @@ import java.util.UUID
 fun EditScreen(
     plantId: String?,
     navController: NavHostController,
-    viewModel: EditPlantViewModel = hiltViewModel()
+    viewModel: EditPlantViewModel = koinViewModel()
 ) {
     val context = LocalContext.current
     val plantImage = viewModel.plantImageUri.collectAsStateWithLifecycle()

@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.recycleview.data.imageconverter.PlantImageConverter
 import com.example.recycleview.data.realm.plant.PlantDao
 import com.example.recycleview.data.realm.plant.PlantEntity
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,10 +15,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class EditPlantViewModel @Inject constructor(
+class EditPlantViewModel constructor(
     private val plantDao: PlantDao,
     private val repository: PlantImageConverter
 ) : ViewModel() {

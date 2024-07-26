@@ -61,7 +61,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -74,6 +73,7 @@ import com.example.recycleview.ui.details.dialogs.AlarmScheduleDialog
 import com.example.recycleview.ui.dialogs.DeleteDialog
 import com.example.recycleview.utils.calculateNextNotificationDate
 import com.example.recycleview.utils.days
+import org.koin.androidx.compose.koinViewModel
 import java.util.UUID
 
 @OptIn(
@@ -85,7 +85,7 @@ fun DetailsScreen(
     modifier: Modifier = Modifier,
     plantId: String,
     navController: NavHostController,
-    viewModel: DetailsViewModel = hiltViewModel(),
+    viewModel: DetailsViewModel = koinViewModel(),
 ) {
     val plant by viewModel.plantData.collectAsStateWithLifecycle()
     val plantScheduleList by viewModel.plantScheduleDataList.collectAsStateWithLifecycle()
