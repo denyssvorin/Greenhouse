@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
 import com.example.recycleview.data.datastore.SortOrder
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PlantDao {
@@ -15,7 +16,7 @@ interface PlantDao {
     fun getPlants(
         searchText: String, sortOrder: SortOrder,
         limit: Int, offset: Int
-    ): List<PlantEntity> =
+    ): Flow<List<PlantEntity>> =
         when(sortOrder) {
             SortOrder.A2Z -> getPlantsSortedA2Z(searchText, limit, offset)
             SortOrder.Z2A -> getPlantsSortedZ2A(searchText, limit, offset)
@@ -24,15 +25,15 @@ interface PlantDao {
             "ORDER BY plantName ASC " +
             "LIMIT :limit " +
             "OFFSET :offset")
-    fun getPlantsSortedA2Z(searchText: String, limit: Int, offset: Int): List<PlantEntity>
+    fun getPlantsSortedA2Z(searchText: String, limit: Int, offset: Int): Flow<List<PlantEntity>>
     @Query("SELECT * FROM plant_table WHERE plantName LIKE '%' || :searchText || '%' " +
             "ORDER BY plantName DESC " +
             "LIMIT :limit " +
             "OFFSET :offset")
-    fun getPlantsSortedZ2A(searchText: String, limit: Int, offset: Int): List<PlantEntity>
+    fun getPlantsSortedZ2A(searchText: String, limit: Int, offset: Int): Flow<List<PlantEntity>>
 
     @Query("SELECT * FROM plant_table WHERE plantId LIKE '%' || :id || '%'")
-    fun getSinglePlant(id: Int): PlantEntity
+    fun getSinglePlant(id: String): PlantEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertPlant(plantEntity: PlantEntity)

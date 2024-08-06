@@ -11,14 +11,14 @@ import kotlinx.coroutines.flow.Flow
 interface PlantScheduleDao {
 
     @Query("SELECT * FROM plant_schedule_table WHERE plantId = :currentPlantId")
-    fun getPlantScheduleByPlantId(currentPlantId: Int): Flow<List<PlantWateringScheduleEntity>>
+    fun getPlantSchedulesByPlantId(currentPlantId: String): Flow<List<PlantScheduleEntity>>
 
     @Query("SELECT * FROM plant_schedule_table")
-    fun getAllSchedules(): List<PlantWateringScheduleEntity>
+    fun getAllSchedules(): List<PlantScheduleEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPlantWateringSchedule(plantWateringScheduleEntity: PlantWateringScheduleEntity)
+    suspend fun insertPlantSchedule(plantScheduleEntity: PlantScheduleEntity)
 
     @Delete
-    suspend fun deleteSchedule(plantWateringScheduleEntity: PlantWateringScheduleEntity)
+    suspend fun deleteSchedule(plantScheduleEntity: PlantScheduleEntity)
 }

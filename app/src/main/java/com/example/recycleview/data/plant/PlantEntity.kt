@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "plant_table")
 @Parcelize
 data class PlantEntity(
-    @PrimaryKey(autoGenerate = true) val plantId: Int? = 0,
+    @PrimaryKey(autoGenerate = false) val plantId: String = "",
     val plantImagePath: String?,
     val plantName: String = "plant_name",
     val plantDescription: String = "plant_description"

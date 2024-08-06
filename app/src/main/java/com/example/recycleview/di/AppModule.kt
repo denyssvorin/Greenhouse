@@ -3,13 +3,15 @@ package com.example.recycleview.di
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.example.recycleview.data.alarm.AlarmScheduler
-import com.example.recycleview.data.alarm.AlarmSchedulerImpl
 import com.example.recycleview.data.datastore.PreferencesManager
 import com.example.recycleview.data.datastore.PreferencesManagerImpl
 import com.example.recycleview.data.plant.PlantDatabase
-import com.example.recycleview.repo.PlantRepository
-import com.example.recycleview.repo.PlantRepositoryImpl
+import com.example.recycleview.data.repo.PlantRepository
+import com.example.recycleview.data.repo.PlantRepositoryImpl
+import com.example.recycleview.domain.alarm.AlarmScheduler
+import com.example.recycleview.domain.alarm.AlarmSchedulerImpl
+import com.example.recycleview.domain.imageconverter.PlantImageConverter
+import com.example.recycleview.domain.imageconverter.PlantImageConverterImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,19 +38,24 @@ object AppModule {
     @Provides
     fun providePlantScheduleDao(db: PlantDatabase) = db.plantScheduleDao()
 
+    @Provides
+    fun providePreferencesManager(@ApplicationContext context: Context): PreferencesManager =
+        PreferencesManagerImpl(context)
+
     @ApplicationScope
     @Provides
     @Singleton
     fun provideApplicationScope() = CoroutineScope(SupervisorJob())
 
     @Provides
-    fun provideRepo(context: Application, db: PlantDatabase): PlantRepository {
-        return PlantRepositoryImpl(context, db)
+    fun provideRepo(db: PlantDatabase): PlantRepository {
+        return PlantRepositoryImpl(db)
     }
 
     @Provides
-    fun providePreferencesManager(@ApplicationContext context: Context): PreferencesManager =
-        PreferencesManagerImpl(context)
+    fun provideImageConverter(context: Application): PlantImageConverter {
+        return PlantImageConverterImpl(context)
+    }
 
     @Provides
     fun provideAlarmScheduler(@ApplicationContext context: Context): AlarmScheduler =

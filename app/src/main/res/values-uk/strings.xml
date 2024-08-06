@@ -63,4 +63,9 @@
     <string name="sort_a_z"><![CDATA[Сортувати А -> Я]]></string>
     <string name="sort_z_a"><![CDATA[Сортувати Я -> A]]></string>
     <string name="sort_icon">Іконка сортування</string>
+    <string name="delete">Видалити</string>
+    <string name="delete_item">Видалити елемент</string>
+    <string name="delete_items">Видалити елементи</string>
+    <string name="are_you_sure_you_want_to_delete_the_item">Ви впевнені, що хочете видалити цей елемент?</string>
+    <string name="are_you_sure_you_want_to_delete_the_items">Ви впевнені, що хочете видалити ці елементи?</string>
 </resources>
