@@ -2,12 +2,12 @@ package com.example.recycleview.di
 
 import android.app.Application
 import android.content.Context
-import com.example.recycleview.data.alarm.AlarmScheduler
-import com.example.recycleview.data.alarm.AlarmSchedulerImpl
+import com.example.recycleview.domain.alarm.AlarmScheduler
+import com.example.recycleview.domain.alarm.AlarmSchedulerImpl
 import com.example.recycleview.data.datastore.PreferencesManager
 import com.example.recycleview.data.datastore.PreferencesManagerImpl
-import com.example.recycleview.data.imageconverter.PlantImageConverter
-import com.example.recycleview.data.imageconverter.PlantImageConverterImpl
+import com.example.recycleview.domain.imageconverter.PlantImageConverter
+import com.example.recycleview.domain.imageconverter.PlantImageConverterImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
