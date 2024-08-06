@@ -14,14 +14,6 @@ import org.koin.core.context.GlobalContext.startKoin
 
 class PlantApplication : Application() {
 
-//    @Inject
-//    lateinit var workerFactory: HiltWorkerFactory
-//
-//    override val workManagerConfiguration: Configuration
-//        get() = Configuration.Builder()
-//            .setWorkerFactory(workerFactory)
-//            .build()
-
     override fun onCreate() {
         super.onCreate()
 
