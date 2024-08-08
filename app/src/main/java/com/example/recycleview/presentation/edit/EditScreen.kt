@@ -37,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -178,11 +179,12 @@ fun EditScreen(
                             GlideImage(
                                 model = plantImage.value ?: R.drawable.plant_placeholder_coloured,
                                 contentDescription = stringResource(R.string.plant),
-                                contentScale = ContentScale.Inside,
+                                contentScale = if (plantImage.value != null) ContentScale.Crop else ContentScale.Inside,
                                 modifier = Modifier
                                     .size(height = 250.dp, width = Dp.Unspecified)
                                     .align(Alignment.Center)
-                                    .padding(8.dp)
+                                    .padding(4.dp)
+                                    .clip(MaterialTheme.shapes.small)
                             )
                             IconButtonCustom(
                                 onClick = { getContent.launch("image/*") },

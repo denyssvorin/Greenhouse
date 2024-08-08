@@ -96,9 +96,6 @@ fun DetailsScreen(
 
     var openAlertDialog by rememberSaveable { mutableStateOf(false) }
 
-    val plantImageData =
-        plant?.imagePath ?: R.drawable.plant_placeholder_coloured
-
     var showPopupMenu by rememberSaveable { mutableStateOf(false) }
     var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -256,12 +253,12 @@ fun DetailsScreen(
                                     )
                                 ) {
                                     GlideImage(
-                                        model = plantImageData,
+                                        model = plant?.imagePath ?: R.drawable.plant_placeholder_coloured,
                                         contentDescription = stringResource(id = R.string.plant_image),
                                         modifier = modifier
                                             .size(height = 250.dp, width = Dp.Unspecified)
                                             .align(Alignment.CenterHorizontally),
-                                        contentScale = ContentScale.Inside,
+                                        contentScale = if (plant?.imagePath != null) ContentScale.Crop else ContentScale.Inside,
                                         alignment = Alignment.Center
                                     )
                                 }

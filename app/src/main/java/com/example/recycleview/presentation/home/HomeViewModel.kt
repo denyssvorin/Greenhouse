@@ -58,13 +58,13 @@ class HomeViewModel @Inject constructor(
     var searchText by mutableStateOf(searchQuery.value)
         private set
 
-    private val _topAppBarState = MutableStateFlow(PlantScreenTopAppBarState())
-    val topAppBarState: StateFlow<PlantScreenTopAppBarState> = _topAppBarState
+    private val _homeScreenState = MutableStateFlow(HomeScreenState())
+    val homeScreenState: StateFlow<HomeScreenState> = _homeScreenState
         .asStateFlow()
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
-            PlantScreenTopAppBarState()
+            HomeScreenState()
         )
 
     init {
@@ -82,19 +82,19 @@ class HomeViewModel @Inject constructor(
     fun onAction(userAction: UserAction) {
         when (userAction) {
             UserAction.CloseIconClicked -> {
-                _topAppBarState.value = _topAppBarState.value.copy(isSearchBarVisible = false)
+                _homeScreenState.value = _homeScreenState.value.copy(isSearchBarVisible = false)
             }
 
             UserAction.SearchIconClicked -> {
-                _topAppBarState.value = _topAppBarState.value.copy(isSearchBarVisible = true)
+                _homeScreenState.value = _homeScreenState.value.copy(isSearchBarVisible = true)
             }
 
             UserAction.SortIconClicked -> {
-                _topAppBarState.value = _topAppBarState.value.copy(isSortMenuVisible = true)
+                _homeScreenState.value = _homeScreenState.value.copy(isSortMenuVisible = true)
             }
 
             UserAction.SortMenuDismiss -> {
-                _topAppBarState.value = _topAppBarState.value.copy(isSortMenuVisible = false)
+                _homeScreenState.value = _homeScreenState.value.copy(isSortMenuVisible = false)
             }
 
             is UserAction.SortItemClicked -> {
@@ -108,7 +108,7 @@ class HomeViewModel @Inject constructor(
 
     private fun sortPlantList(sortOrder: SortOrder) = viewModelScope.launch(Dispatchers.IO) {
         preferencesManager.saveSortOrder(sortOrder)
-        _topAppBarState.value = _topAppBarState.value.copy(
+        _homeScreenState.value = _homeScreenState.value.copy(
             isSortMenuVisible = false
         )
     }
@@ -131,9 +131,7 @@ enum class SortType {
     Z2A
 }
 
-data class PlantScreenTopAppBarState(
+data class HomeScreenState(
     val isSearchBarVisible: Boolean = false,
-    val isSortMenuVisible: Boolean = false,
+    val isSortMenuVisible: Boolean = false
 )
-
-class OnChange<T>(var value: T)

@@ -84,6 +84,7 @@ import androidx.compose.ui.unit.toIntRect
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.recycleview.R
 import com.example.recycleview.domain.models.Plant
@@ -99,8 +100,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val plantList = viewModel.plantPagingFlow.collectAsLazyPagingItems()
-
-    val topAppBarState = viewModel.topAppBarState.collectAsStateWithLifecycle()
+    val screenState = viewModel.homeScreenState.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -138,7 +138,7 @@ fun HomeScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             Crossfade(
-                targetState = topAppBarState.value.isSearchBarVisible,
+                targetState = screenState.value.isSearchBarVisible,
                 animationSpec = tween(durationMillis = 500), label = ""
             ) { searchIsOpen ->
                 if (searchIsOpen) {
@@ -166,7 +166,7 @@ fun HomeScreen(
                         onSortMenuDismiss = {
                             viewModel.onAction(UserAction.SortMenuDismiss)
                         },
-                        isSortMenuVisible = topAppBarState.value.isSortMenuVisible,
+                        isSortMenuVisible = screenState.value.isSortMenuVisible,
                         onSortItemA2ZClicked = {
                             viewModel.onAction(
                                 UserAction.SortItemClicked(SortType.A2Z)
@@ -213,58 +213,62 @@ fun HomeScreen(
                     .background(MaterialTheme.colorScheme.background)
 
             ) {
-                if (plantList == null) {
-                    Box(
-                        modifier = modifier
-                            .fillMaxSize()
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .size(48.dp)
-                                .align(Alignment.Center),
-                            color = MaterialTheme.colorScheme.secondary,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                        )
-                    }
-                } else if (plantList.itemCount > 0) {
-                    PlantGrid(
-                        plantEntityList = plantList.itemSnapshotList.items,
-                        navController = navController,
-                        selectedIds = selectedItems,
-                    )
-                } else {
-                    Box(
-                        modifier = modifier
-                            .fillMaxSize()
-                            .padding(8.dp)
-                    ) {
-                        Column(
+                when {
+                    plantList.loadState.refresh is LoadState.Loading -> {
+                        Box(
                             modifier = modifier
                                 .fillMaxSize()
-                                .padding(8.dp),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.plant_image),
-                                contentDescription = stringResource(R.string.empty_list_image),
-                                alpha = 0.8f,
-                                modifier = modifier.scale(0.9f)
-                            )
-                            Spacer(modifier = modifier.size(8.dp))
-                            Text(
-                                text = if (!topAppBarState.value.isSearchBarVisible) {
-                                    stringResource(R.string.your_personal_list_is_empty)
-                                } else {
-                                    stringResource(R.string.no_results)
-                                },
-                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
-                                style = MaterialTheme.typography.titleLarge.copy(
-                                    fontWeight = FontWeight.Bold,
-                                ),
-                                textAlign = TextAlign.Center
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .align(Alignment.Center),
+                                color = MaterialTheme.colorScheme.secondary,
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
                             )
                         }
+                    }
+                    plantList.itemCount == 0 -> {
+                        Box(
+                            modifier = modifier
+                                .fillMaxSize()
+                                .padding(8.dp)
+                        ) {
+                            Column(
+                                modifier = modifier
+                                    .fillMaxSize()
+                                    .padding(8.dp),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.plant_image),
+                                    contentDescription = stringResource(R.string.empty_list_image),
+                                    alpha = 0.8f,
+                                    modifier = modifier.scale(0.9f)
+                                )
+                                Spacer(modifier = modifier.size(8.dp))
+                                Text(
+                                    text = if (!screenState.value.isSearchBarVisible) {
+                                        stringResource(R.string.your_personal_list_is_empty)
+                                    } else {
+                                        stringResource(R.string.no_results)
+                                    },
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
+                                    style = MaterialTheme.typography.titleLarge.copy(
+                                        fontWeight = FontWeight.Bold,
+                                    ),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                    else -> {
+                        PlantGrid(
+                            plantEntityList = plantList.itemSnapshotList.items,
+                            navController = navController,
+                            selectedIds = selectedItems,
+                        )
                     }
                 }
             }
@@ -457,8 +461,8 @@ private fun PlantGrid(
     LazyVerticalGrid(
         state = state,
         columns = GridCells.Adaptive(minSize = 120.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
         modifier = modifier
             .padding(8.dp)
             .photoGridDragHandler(
