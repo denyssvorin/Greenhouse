@@ -13,14 +13,15 @@ The mobile app will help you take care of your plants. You can add photos from t
 ## Tech Stack
 
 - Kotlin
-- MVVM
-- Room
+- MVVM/MVI
+- Realm
 - Preferences DataStore
-- Jetpack Compose (Compose UI, Navigation, Paging)
+- Jetpack Compose (Compose UI, Navigation)
 - Coroutines, Flows
 - AlarmManager
+- WorkManager
 - Content Provider
-- Hilt
+- Koin
 
 ## Video sample
 
