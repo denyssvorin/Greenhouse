@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +44,8 @@ import com.example.recycleview.presentation.utils.mappers.localDateToMillisecond
 import com.example.recycleview.presentation.utils.mappers.localDateToStringForUI
 import com.example.recycleview.presentation.utils.mappers.localTimeToString
 import com.example.recycleview.presentation.utils.mappers.millisToLocalDate
+import com.example.recycleview.presentation.utils.mappers.parseLocalDate
+import com.example.recycleview.presentation.utils.mappers.parseLocalTime
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -55,14 +58,11 @@ fun AlarmScheduleDialog(
     onConfirmation: (PlantScheduleData) -> Unit,
     dialogTitle: String,
     icon: Painter,
+    alarmItem: AlarmItem?,
     modifier: Modifier = Modifier
 ) {
     var pickedDays by rememberSaveable {
-        mutableStateOf("-1")
-    }
-
-    var isInitialDaysInput by rememberSaveable {
-        mutableStateOf(true)
+        mutableStateOf(alarmItem?.days ?: "0")
     }
 
     val isDaysInputIncorrect by remember {
@@ -72,7 +72,7 @@ fun AlarmScheduleDialog(
     }
 
     var pickedTime by rememberSaveable {
-        mutableStateOf(LocalTime.NOON)
+        mutableStateOf(parseLocalTime(alarmItem?.startTime) ?: LocalTime.now())
     }
 
     val formattedTimeString by remember {
@@ -82,7 +82,7 @@ fun AlarmScheduleDialog(
     }
 
     var pickedDate by rememberSaveable {
-        mutableStateOf(LocalDate.now())
+        mutableStateOf(parseLocalDate(alarmItem?.startDate) ?: LocalDate.now())
     }
 
     val pickedDateString by remember {
@@ -97,11 +97,11 @@ fun AlarmScheduleDialog(
         }
     }
 
-    val openTimePickerDialog = remember { mutableStateOf(false) }
-    val openDatePickerDialog = remember { mutableStateOf(false) }
+    val openTimePickerDialog = rememberSaveable { mutableStateOf(false) }
+    val openDatePickerDialog = rememberSaveable { mutableStateOf(false) }
 
     var notificationMessage by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf(alarmItem?.message ?: "")
     }
 
     if (openTimePickerDialog.value) {
@@ -152,10 +152,10 @@ fun AlarmScheduleDialog(
                 DaysInputPart(
                     onTextChange = { text: String ->
                         pickedDays = text
-                        isInitialDaysInput = false
                     },
                     isInputIncorrect = isDaysInputIncorrect,
-                    modifier = modifier
+                    modifier = modifier,
+                    days = pickedDays
                 )
 
                 Spacer(
@@ -193,6 +193,7 @@ fun AlarmScheduleDialog(
                     onTextChange = { text: String ->
                         notificationMessage = text
                     },
+                    notificationMessage = notificationMessage,
                     modifier = modifier
                 )
             }
@@ -203,7 +204,7 @@ fun AlarmScheduleDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (!isDaysInputIncorrect && !isInitialDaysInput) {
+                    if (!isDaysInputIncorrect && pickedDays != "0") {
                         onConfirmation(
                             PlantScheduleData(
                                 notificationMessage = notificationMessage,
@@ -213,6 +214,7 @@ fun AlarmScheduleDialog(
                             )
                         )
                     } else {
+                        // set empty value to show error state on textField
                         pickedDays = ""
                     }
                 }
@@ -236,6 +238,7 @@ fun AlarmScheduleDialog(
 fun DaysInputPart(
     onTextChange: (String) -> Unit,
     isInputIncorrect: Boolean,
+    days: String?,
     modifier: Modifier = Modifier,
 ) {
     var textFieldValue by rememberSaveable {
@@ -244,6 +247,10 @@ fun DaysInputPart(
 
     val numberRegex = """\b(?:[1-9]|[1-9]\d{1,2}|999)\b""".toRegex()
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        textFieldValue = days ?: ""
+    }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -355,10 +362,15 @@ fun TimePickerPart(
 @Composable
 fun ScheduleMessageInputPart(
     onTextChange: (String) -> Unit,
+    notificationMessage: String,
     modifier: Modifier = Modifier,
 ) {
     var textFieldValue by rememberSaveable {
         mutableStateOf("")
+    }
+
+    LaunchedEffect(Unit) {
+        textFieldValue = notificationMessage
     }
 
     Row(
@@ -389,6 +401,7 @@ fun PreviewAlarmScheduleDialog() {
         onDismissRequest = { /* No action */ },
         onConfirmation = { /* No action */ },
         dialogTitle = "Set-up alarm",
-        icon = painterResource(id = R.drawable.ic_schedule)
+        icon = painterResource(id = R.drawable.ic_schedule),
+        alarmItem = AlarmItem("", "", "", "", ""),
     )
 }

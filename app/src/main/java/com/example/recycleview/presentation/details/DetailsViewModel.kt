@@ -8,6 +8,7 @@ import com.example.recycleview.data.realm.plantschedule.PlantScheduleDao
 import com.example.recycleview.data.realm.plantschedule.PlantScheduleEntity
 import com.example.recycleview.domain.alarm.AlarmScheduler
 import com.example.recycleview.domain.models.PlantScheduleData
+import com.example.recycleview.presentation.details.dialogs.AlarmItem
 import com.example.recycleview.presentation.utils.mappers.toAlarmPlant
 import com.example.recycleview.presentation.utils.mappers.toPlantScheduleEntity
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +43,13 @@ class DetailsViewModel (
                 emptyList()
             )
 
+    private val _plantNotificationItem = MutableStateFlow<AlarmItem?>(null)
+    val plantNotificationItem: StateFlow<AlarmItem?> = _plantNotificationItem
+
+    fun setPlantNotificationItem(alarmItem: AlarmItem?) {
+        _plantNotificationItem.value = alarmItem
+    }
+
     fun getPlant(id: String) = viewModelScope.launch {
         val plant = plantDao.getSinglePlant(id)
         _plantData.value = plant
@@ -69,14 +77,20 @@ class DetailsViewModel (
         alarmScheduler.schedule(alarmPlant)
     }
 
-    fun cancelSchedule(scheduleId: Int) {
-        alarmScheduler.cancel(scheduleId)
+    fun cancelSchedule(scheduleId: String) {
+        alarmScheduler.cancel(scheduleId.hashCode())
     }
 
     fun saveWateringSchedule(item: PlantScheduleData, scheduleId: String, plantEntityId: String) =
         viewModelScope.launch {
             val entity = item.toPlantScheduleEntity(scheduleId)
             plantScheduleDao.insertPlantSchedule(entity, plantEntityId)
+        }
+
+    fun updateWateringSchedule(item: PlantScheduleData, scheduleId: String, plantId: String) =
+        viewModelScope.launch {
+            val entity = item.toPlantScheduleEntity(scheduleId)
+            plantScheduleDao.updatePlantSchedule(entity, plantId)
         }
 
     fun deleteSchedule(plantScheduleEntityId: String) = viewModelScope.launch {

@@ -68,4 +68,5 @@
     <string name="delete_items">Delete items</string>
     <string name="are_you_sure_you_want_to_delete_the_item">Are you sure you want to delete the item?</string>
     <string name="are_you_sure_you_want_to_delete_the_items">Are you sure you want to delete the items?</string>
+    <string name="notification_updated">Notification updated!</string>
 </resources>

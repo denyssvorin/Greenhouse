@@ -167,7 +167,7 @@ fun EditScreen(
                             .align(Alignment.CenterHorizontally),
                         shape = MaterialTheme.shapes.medium,
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
                         )
                     ) {
                         Box(
@@ -201,7 +201,7 @@ fun EditScreen(
                             .align(Alignment.CenterHorizontally),
                         shape = MaterialTheme.shapes.medium,
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
                         )
                     ) {
                         OutlinedTextField(
@@ -214,11 +214,23 @@ fun EditScreen(
                                 ),
                             value = viewModel.plantName,
                             colors = TextFieldDefaults.colors(
-                                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                cursorColor = MaterialTheme.colorScheme.primary,
-                                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                disabledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                cursorColor = MaterialTheme.colorScheme.onSurface,
+                                focusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                                disabledSupportingTextColor = MaterialTheme.colorScheme.onSurface,
+                                focusedSupportingTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedSupportingTextColor = MaterialTheme.colorScheme.onSurface,
+                                focusedPlaceholderColor = MaterialTheme.colorScheme.onSurface,
+                                focusedLeadingIconColor = MaterialTheme.colorScheme.onSurface,
+                                focusedTrailingIconColor = MaterialTheme.colorScheme.onSurface,
+                                focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                                focusedPrefixColor = MaterialTheme.colorScheme.onSurface,
+                                focusedSuffixColor = MaterialTheme.colorScheme.onSurface,
                             ),
                             onValueChange = { newValue ->
                                 viewModel.updatePlantNameTextField(newValue)
@@ -235,11 +247,24 @@ fun EditScreen(
                                     bottom = 16.dp
                                 ),
                             value = viewModel.plantDescription,
-                            colors = TextFieldDefaults.textFieldColors(
-                                focusedLabelColor = MaterialTheme.colorScheme.primary,
-                                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                cursorColor = MaterialTheme.colorScheme.primary
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                disabledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                cursorColor = MaterialTheme.colorScheme.onSurface,
+                                focusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
+                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                                disabledSupportingTextColor = MaterialTheme.colorScheme.onSurface,
+                                focusedSupportingTextColor = MaterialTheme.colorScheme.onSurface,
+                                unfocusedSupportingTextColor = MaterialTheme.colorScheme.onSurface,
+                                focusedPlaceholderColor = MaterialTheme.colorScheme.onSurface,
+                                focusedLeadingIconColor = MaterialTheme.colorScheme.onSurface,
+                                focusedTrailingIconColor = MaterialTheme.colorScheme.onSurface,
+                                focusedLabelColor = MaterialTheme.colorScheme.onSurface,
+                                focusedPrefixColor = MaterialTheme.colorScheme.onSurface,
+                                focusedSuffixColor = MaterialTheme.colorScheme.onSurface,
                             ),
                             onValueChange = { newValue ->
                                 viewModel.updatePlantDescriptionTextField(newValue)

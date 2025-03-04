@@ -50,7 +50,7 @@ fun PlantItem(
             .fillMaxSize(),
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
     ) {
         Box(modifier = modifier.fillMaxSize()) {
@@ -97,7 +97,7 @@ fun PlantItem(
                     Modifier
                         .padding(8.dp),
                     maxLines = 1,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = MaterialTheme.colorScheme.onSurface,
                     overflow = TextOverflow.Ellipsis,
                     fontWeight = FontWeight.Medium,
                     fontSize = 16.sp,

@@ -63,8 +63,8 @@ fun calculateNextNotificationDate(
     notificationTime: String,
     interval: Long
 ): String {
-    var nextNotificationDate: LocalDate = parseLocalDate(startDate)
-    val nextNotificationTime: LocalTime = parseLocalTime(notificationTime)
+    var nextNotificationDate: LocalDate = parseLocalDate(startDate) ?: LocalDate.now()
+    val nextNotificationTime: LocalTime = parseLocalTime(notificationTime) ?: LocalTime.NOON
 
     val currentDate = LocalDate.now()
     val currentTime = LocalTime.now()
@@ -104,12 +104,20 @@ fun calculateNextNotificationDateLong(
     return longValue
 }
 
-private fun parseLocalTime(timeString: String): LocalTime {
-    val formatter = DateTimeFormatter.ofPattern("HH:mm")
-    return LocalTime.parse(timeString, formatter)
+fun parseLocalTime(timeString: String?): LocalTime? {
+    return if (timeString != null) {
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+        LocalTime.parse(timeString, formatter)
+    } else {
+        null
+    }
 }
 
-private fun parseLocalDate(dateString: String): LocalDate {
-    val formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM, yyyy", Locale.ROOT)
-    return LocalDate.parse(dateString, formatter)
+fun parseLocalDate(dateString: String?): LocalDate? {
+    return if (dateString != null) {
+        val formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM, yyyy", Locale.ROOT)
+        LocalDate.parse(dateString, formatter)
+    } else {
+        null
+    }
 }

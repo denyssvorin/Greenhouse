@@ -68,4 +68,5 @@
     <string name="delete_items">Видалити елементи</string>
     <string name="are_you_sure_you_want_to_delete_the_item">Ви впевнені, що хочете видалити цей елемент?</string>
     <string name="are_you_sure_you_want_to_delete_the_items">Ви впевнені, що хочете видалити ці елементи?</string>
+    <string name="notification_updated">Сповіщення оновлено</string>
 </resources>

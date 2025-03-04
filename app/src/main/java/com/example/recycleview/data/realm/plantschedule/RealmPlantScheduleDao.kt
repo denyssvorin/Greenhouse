@@ -55,6 +55,30 @@ interface PlantScheduleDao : RealmDao<PlantScheduleEntity> {
         })
     }
 
+    suspend fun updatePlantSchedule(scheduleEntity: PlantScheduleEntity, plantId: String) {
+        Log.i("TAG", "scheduleEntity._id = ${scheduleEntity._id} ")
+
+        realm.executeTransactionAsync({ realm ->
+            val plantEntity = realm.where(PlantEntity::class.java)
+                .equalTo("_id", plantId)
+                .findFirst()
+
+            val entity = scheduleEntity.apply {
+                plant = plantEntity
+            }
+
+            realm.insertOrUpdate(entity)
+        }, {
+            // onSuccess callback
+            Log.i("RealmTransaction", "Transaction was successful!")
+
+        }, { error ->
+            // onError callback
+            Log.e("RealmTransaction", "Transaction failed: ${error.message}")
+            error.printStackTrace()
+        })
+    }
+
     suspend fun deleteSchedule(plantScheduleEntityId: String) {
         delete("_id", plantScheduleEntityId)
     }

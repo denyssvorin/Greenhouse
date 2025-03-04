@@ -20,12 +20,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,6 +37,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -52,6 +54,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
@@ -61,6 +64,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -69,6 +73,7 @@ import com.example.recycleview.R
 import com.example.recycleview.data.realm.plantschedule.PlantScheduleEntity
 import com.example.recycleview.domain.models.PlantScheduleData
 import com.example.recycleview.presentation.ScreenNavigation
+import com.example.recycleview.presentation.details.dialogs.AlarmItem
 import com.example.recycleview.presentation.details.dialogs.AlarmScheduleDialog
 import com.example.recycleview.presentation.dialogs.DeleteDialog
 import com.example.recycleview.presentation.utils.days
@@ -100,11 +105,54 @@ fun DetailsScreen(
     var showPopupMenu by rememberSaveable { mutableStateOf(false) }
     var openDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
+    val selectedAlarmItem by viewModel.plantNotificationItem.collectAsStateWithLifecycle()
+
     LaunchedEffect(plantId) {
         viewModel.getPlant(plantId)
         viewModel.getPlantSchedules(plantId)
     }
 
+    if (selectedAlarmItem != null) {
+        AlarmScheduleDialog(
+            onDismissRequest = { viewModel.setPlantNotificationItem(null) },
+            onConfirmation = { plantScheduleData: PlantScheduleData ->
+                viewModel.setPlantNotificationItem(null)
+
+                val scheduleId = selectedAlarmItem!!.id
+
+                viewModel.cancelSchedule(scheduleId)
+
+                viewModel.updateWateringSchedule(
+                    item = plantScheduleData,
+                    scheduleId = scheduleId,
+                    plantId = plantId
+                )
+
+                viewModel.scheduleWatering(
+                    item = plantScheduleData,
+                    scheduleId = scheduleId,
+                    plantId = plant?._id.toString(),
+                    plantName = plant?.plantName ?: context.getString(R.string.plant),
+                    plantImagePath = plant?.plantImagePath,
+                )
+
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.notification_updated),
+                    Toast.LENGTH_SHORT
+                ).show()
+            },
+            dialogTitle = stringResource(R.string.set_up_notification),
+            icon = painterResource(id = R.drawable.ic_schedule),
+            alarmItem = AlarmItem(
+                id = selectedAlarmItem!!.id,
+                days = selectedAlarmItem!!.days,
+                startDate = selectedAlarmItem!!.startDate,
+                startTime = selectedAlarmItem!!.startTime,
+                message = selectedAlarmItem!!.message
+            )
+        )
+    }
     if (openAlertDialog) {
         AlarmScheduleDialog(
             onDismissRequest = { openAlertDialog = false },
@@ -134,7 +182,8 @@ fun DetailsScreen(
                 ).show()
             },
             dialogTitle = stringResource(R.string.set_up_notification),
-            icon = painterResource(id = R.drawable.ic_schedule)
+            icon = painterResource(id = R.drawable.ic_schedule),
+            alarmItem = null
         )
     }
     if (openDeleteDialog) {
@@ -196,7 +245,20 @@ fun DetailsScreen(
                             onDismissRequest = { showPopupMenu = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text(stringResource(id = R.string.delete)) },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Delete,
+                                        contentDescription = stringResource(
+                                            id = R.string.delete
+                                        )
+                                    )
+                                },
+                                text = {
+                                    Text(
+                                        stringResource(id = R.string.delete),
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+                                },
                                 onClick = { openDeleteDialog = true }
                             )
                         }
@@ -248,7 +310,7 @@ fun DetailsScreen(
                                         .fillMaxWidth(),
                                     shape = MaterialTheme.shapes.medium,
                                     colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                                        containerColor = MaterialTheme.colorScheme.surfaceContainer
                                     )
                                 ) {
                                     GlideImage(
@@ -269,12 +331,14 @@ fun DetailsScreen(
                                         .fillMaxWidth(),
                                     shape = MaterialTheme.shapes.medium,
                                     colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                                        containerColor = MaterialTheme.colorScheme.surfaceContainer
                                     )
                                 ) {
                                     Text(
                                         text = plant?.plantName.toString(),
-                                        style = MaterialTheme.typography.titleLarge,
+                                        style = MaterialTheme.typography.titleLarge.copy(
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        ),
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier
                                             .padding(vertical = 8.dp)
@@ -288,7 +352,9 @@ fun DetailsScreen(
                                             top = 12.dp,
                                             bottom = 8.dp
                                         ),
-                                        style = MaterialTheme.typography.bodyMedium
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
                                     )
                                 }
                             }
@@ -317,7 +383,18 @@ fun DetailsScreen(
                                             removeState = false
                                             showConfirmDialog = true
                                         },
-                                        modifier = Modifier
+                                        modifier = Modifier,
+                                        onItemClick = {
+                                            viewModel.setPlantNotificationItem(
+                                                AlarmItem(
+                                                    id = item._id,
+                                                    days = item.daysInterval.toString(),
+                                                    startDate = item.firstTriggerDate,
+                                                    startTime = item.time,
+                                                    message = item.notificationMessage
+                                                )
+                                            )
+                                        }
                                     )
                                 }
 
@@ -329,7 +406,7 @@ fun DetailsScreen(
                                         confirmButton = {
                                             TextButton(onClick = {
                                                 removeState = true
-                                                viewModel.cancelSchedule(item._id.hashCode())
+                                                viewModel.cancelSchedule(item._id)
 
                                                 viewModel.deleteSchedule(item._id)
                                                 showConfirmDialog = false
@@ -349,7 +426,7 @@ fun DetailsScreen(
                             }
 
                             item {
-                                Button(
+                                OutlinedButton(
                                     onClick = { openAlertDialog = true },
                                 ) {
                                     Text(text = stringResource(R.string.add_a_reminder))
@@ -377,7 +454,8 @@ fun DetailsScreen(
 fun WateringNotificationItem(
     plantScheduleEntity: PlantScheduleEntity,
     onDeleteClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onItemClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val time: String = plantScheduleEntity.time
@@ -390,33 +468,37 @@ fun WateringNotificationItem(
 
     val interval: Int = plantScheduleEntity.daysInterval ?: 1
 
-    val nextWateringDate = remember {
-        calculateNextNotificationDate(
-            startDate = startDate,
-            notificationTime = time,
-            interval = interval.toLong(),
-        )
-    }
+    val nextWateringDate = calculateNextNotificationDate(
+        startDate = startDate,
+        notificationTime = time,
+        interval = interval.toLong(),
+    )
+
 
     Box(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(12.dp))
+            .clickable {
+                onItemClick()
+            }
     ) {
         Card(
-            modifier = modifier
-                .fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             shape = MaterialTheme.shapes.medium,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer
             ),
         ) {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Row(
                     modifier = modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
+                        .padding(8.dp)
+                        .zIndex(2f),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Column(
@@ -427,21 +509,31 @@ fun WateringNotificationItem(
                         ) {
                             Text(
                                 text = plantScheduleEntity.notificationMessage,
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                                ),
+                                modifier = modifier.zIndex(2f)
                             )
                         }
 
                         Text(
                             text = time,
-                            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                            ),
                         )
                         Text(
                             text = "${stringResource(id = R.string.repeat_every)} $days",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                            ),
                         )
                         Text(
                             text = stringResource(R.string.next_triggering, nextWateringDate),
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                            ),
                         )
                     }
                 }
@@ -456,6 +548,7 @@ fun WateringNotificationItem(
                         .padding(end = 30.dp)
                         .size(120.dp)
                         .clipToBounds()
+                        .zIndex(1f)
                 )
             }
         }
@@ -463,7 +556,7 @@ fun WateringNotificationItem(
             painter = painterResource(id = R.drawable.ic_cancel),
             contentDescription = stringResource(R.string.remove),
             tint = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.5f),
-            modifier = modifier
+            modifier = Modifier
                 .clickable { onDeleteClicked() }
                 .align(Alignment.TopEnd)
                 .padding(8.dp)
