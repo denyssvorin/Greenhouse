@@ -1,4 +1,4 @@
-package com.example.recycleview.domain.imageconverter
+package com.example.recycleview.data.imagemanager
 
 import android.app.Application
 import android.content.ContentResolver
@@ -8,15 +8,16 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import androidx.core.net.toUri
+import com.example.recycleview.domain.imagemanager.PlantImageManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-class PlantImageConverterImpl constructor(
+class PlantImageManagerImpl constructor(
     private val context: Application,
-) : PlantImageConverter {
+) : PlantImageManager {
     override suspend fun mapPhotosFromExternalStorage(imagePath: String): String {
         return withContext(Dispatchers.IO) {
             val numericPart = imagePath.replace(Regex("[^0-9]"), "")

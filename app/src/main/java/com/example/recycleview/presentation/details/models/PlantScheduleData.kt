@@ -1,4 +1,4 @@
-package com.example.recycleview.domain.models
+package com.example.recycleview.presentation.details.models
 
 import java.time.LocalDate
 import java.time.LocalTime

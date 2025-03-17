@@ -1,4 +1,4 @@
-package com.example.recycleview.presentation.details.dialogs
+package com.example.recycleview.presentation.details.models
 
 data class AlarmItem(
     val id: String,

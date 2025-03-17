@@ -5,9 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.recycleview.domain.imageconverter.PlantImageConverter
 import com.example.recycleview.data.realm.plant.PlantDao
 import com.example.recycleview.data.realm.plant.PlantEntity
+import com.example.recycleview.domain.imagemanager.PlantImageManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class EditPlantViewModel constructor(
     private val plantDao: PlantDao,
-    private val repository: PlantImageConverter
+    private val plantImageManager: PlantImageManager
 ) : ViewModel() {
 
     private val _plantImageUri = MutableStateFlow<String?>(null)
@@ -60,7 +60,7 @@ class EditPlantViewModel constructor(
     }
 
     fun mapPhotos(imagePath: String) = viewModelScope.launch(Dispatchers.IO) {
-        val photo = repository.mapPhotosFromExternalStorage(imagePath)
+        val photo = plantImageManager.mapPhotosFromExternalStorage(imagePath)
         _plantImageUri.value = photo
     }
 }

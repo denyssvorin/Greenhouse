@@ -7,8 +7,8 @@ import com.example.recycleview.data.realm.plant.PlantEntity
 import com.example.recycleview.data.realm.plantschedule.PlantScheduleDao
 import com.example.recycleview.data.realm.plantschedule.PlantScheduleEntity
 import com.example.recycleview.domain.alarm.AlarmScheduler
-import com.example.recycleview.domain.models.PlantScheduleData
-import com.example.recycleview.presentation.details.dialogs.AlarmItem
+import com.example.recycleview.presentation.details.models.AlarmItem
+import com.example.recycleview.presentation.details.models.PlantScheduleData
 import com.example.recycleview.presentation.utils.mappers.toAlarmPlant
 import com.example.recycleview.presentation.utils.mappers.toPlantScheduleEntity
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -32,9 +32,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name="com.example.recycleview.domain.alarm.AlarmReceiver" />
+        <receiver android:name="com.example.recycleview.data.scheduler.alarm.AlarmReceiver" />
         <receiver
-            android:name="com.example.recycleview.domain.alarm.restartalarm.RestartAlarmsReceiver"
+            android:name="com.example.recycleview.data.scheduler.alarm.restart.RestartAlarmsReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

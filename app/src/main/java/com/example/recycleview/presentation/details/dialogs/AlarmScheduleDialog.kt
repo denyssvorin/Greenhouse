@@ -38,7 +38,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recycleview.R
-import com.example.recycleview.domain.models.PlantScheduleData
+import com.example.recycleview.presentation.details.models.AlarmItem
+import com.example.recycleview.presentation.details.models.PlantScheduleData
 import com.example.recycleview.presentation.utils.formatDays
 import com.example.recycleview.presentation.utils.mappers.localDateToMilliseconds
 import com.example.recycleview.presentation.utils.mappers.localDateToStringForUI

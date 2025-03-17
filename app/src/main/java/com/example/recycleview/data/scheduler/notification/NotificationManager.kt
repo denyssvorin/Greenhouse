@@ -1,4 +1,4 @@
-package com.example.recycleview.domain.notification
+package com.example.recycleview.data.scheduler.notification
 
 import android.Manifest
 import android.app.NotificationChannel

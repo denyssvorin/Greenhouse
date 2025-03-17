@@ -1,8 +1,8 @@
 package com.example.recycleview.presentation.utils.mappers
 
 import com.example.recycleview.data.realm.plantschedule.PlantScheduleEntity
-import com.example.recycleview.domain.alarm.AlarmPlant
-import com.example.recycleview.domain.models.PlantScheduleData
+import com.example.recycleview.data.scheduler.alarm.AlarmPlant
+import com.example.recycleview.presentation.details.models.PlantScheduleData
 
 fun PlantScheduleData.toAlarmPlant(
     scheduleId: String,

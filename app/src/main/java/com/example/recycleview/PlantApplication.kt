@@ -1,6 +1,7 @@
 package com.example.recycleview
 
 import android.app.Application
+import android.util.Log
 import com.example.recycleview.di.alarmSchedulerModule
 import com.example.recycleview.di.imageConverterModule
 import com.example.recycleview.di.notificationWorkerModule
@@ -17,8 +18,8 @@ class PlantApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        println("Start koin at thread name ${Thread.currentThread().name}")
-        println("Start koin at thread id ${Thread.currentThread().id}")
+        Log.i("PlantApplication", "onCreate: Start koin at thread name ${Thread.currentThread().name}")
+        Log.i("PlantApplication", "onCreate: Start koin at thread id ${Thread.currentThread().id}")
 
         startKoin {
             androidContext(this@PlantApplication)

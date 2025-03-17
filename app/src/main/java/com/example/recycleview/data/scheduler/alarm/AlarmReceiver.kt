@@ -1,16 +1,17 @@
-package com.example.recycleview.domain.alarm
+package com.example.recycleview.data.scheduler.alarm
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.recycleview.domain.alarm.AlarmSchedulerImpl.Companion.EXTRA_NOTIFICATION_ALARM_ITEM
-import com.example.recycleview.domain.notification.NotificationWorker
-import com.example.recycleview.domain.notification.NotificationWorkerItem
+import com.example.recycleview.data.scheduler.alarm.AlarmSchedulerImpl.Companion.EXTRA_NOTIFICATION_ALARM_ITEM
+import com.example.recycleview.data.scheduler.notification.NotificationWorker
+import com.example.recycleview.data.scheduler.notification.NotificationWorkerItem
 import com.google.gson.Gson
 
 //@AndroidEntryPoint
@@ -28,7 +29,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 intent?.getParcelableExtra(EXTRA_NOTIFICATION_ALARM_ITEM)
             } ?: return
 
-        println("Alarm triggered in broadcast receiver")
+        Log.i("AlarmReceiver", "onReceive: Alarm triggered in broadcast receiver")
 
         if (context != null) {
 

@@ -1,17 +1,18 @@
 package com.example.recycleview.di
 
-import com.example.recycleview.domain.alarm.AlarmScheduler
-import com.example.recycleview.domain.alarm.AlarmSchedulerImpl
-import com.example.recycleview.domain.alarm.restartalarm.RestartAlarmsWorker
+import android.util.Log
 import com.example.recycleview.data.datastore.PreferencesManager
 import com.example.recycleview.data.datastore.PreferencesManagerImpl
-import com.example.recycleview.domain.imageconverter.PlantImageConverter
-import com.example.recycleview.domain.imageconverter.PlantImageConverterImpl
-import com.example.recycleview.domain.notification.NotificationWorker
+import com.example.recycleview.data.imagemanager.PlantImageManagerImpl
 import com.example.recycleview.data.realm.plant.PlantDao
 import com.example.recycleview.data.realm.plant.RealmPlantDaoImpl
 import com.example.recycleview.data.realm.plantschedule.PlantScheduleDao
 import com.example.recycleview.data.realm.plantschedule.RealmPlantScheduleDaoImpl
+import com.example.recycleview.data.scheduler.alarm.AlarmSchedulerImpl
+import com.example.recycleview.data.scheduler.alarm.restart.RestartAlarmsWorker
+import com.example.recycleview.data.scheduler.notification.NotificationWorker
+import com.example.recycleview.domain.alarm.AlarmScheduler
+import com.example.recycleview.domain.imagemanager.PlantImageManager
 import com.example.recycleview.presentation.details.DetailsViewModel
 import com.example.recycleview.presentation.edit.EditPlantViewModel
 import com.example.recycleview.presentation.home.HomeViewModel
@@ -28,8 +29,8 @@ val realmModule = module(createdAtStart = true) {
     single<Realm> {
         Realm.init(androidContext())
 
-        println("realm create at thread name ${Thread.currentThread().name}")
-        println("realm create at thread id ${Thread.currentThread().id}")
+        Log.i("realmModule", "realm create at thread name ${Thread.currentThread().name}")
+        Log.i("realmModule", "realm create at thread id ${Thread.currentThread().id}")
 
         val realmConfig = RealmConfiguration.Builder()
             .name("plant.realm")
@@ -45,7 +46,7 @@ val realmModule = module(createdAtStart = true) {
 }
 
 val imageConverterModule = module {
-    factory<PlantImageConverter> { PlantImageConverterImpl(get()) }
+    factory<PlantImageManager> { PlantImageManagerImpl(get()) }
 }
 
 val preferencesManagerModule = module {

@@ -1,4 +1,4 @@
-package com.example.recycleview.domain.notification
+package com.example.recycleview.data.scheduler.notification
 
 data class NotificationItem(
     val scheduleId: String,

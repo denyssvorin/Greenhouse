@@ -1,4 +1,4 @@
-package com.example.recycleview.domain.utils
+package com.example.recycleview.data.scheduler.utils
 
 import java.time.LocalDate
 import java.time.LocalDateTime

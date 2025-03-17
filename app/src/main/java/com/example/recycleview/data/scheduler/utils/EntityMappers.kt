@@ -1,10 +1,10 @@
-package com.example.recycleview.domain.utils
+package com.example.recycleview.data.scheduler.utils
 
 import com.example.recycleview.data.realm.plant.PlantEntity
 import com.example.recycleview.data.realm.plantschedule.PlantScheduleEntity
-import com.example.recycleview.domain.alarm.AlarmPlant
-import com.example.recycleview.domain.notification.NotificationItem
-import com.example.recycleview.domain.notification.NotificationWorkerItem
+import com.example.recycleview.data.scheduler.alarm.AlarmPlant
+import com.example.recycleview.data.scheduler.notification.NotificationItem
+import com.example.recycleview.data.scheduler.notification.NotificationWorkerItem
 
 fun AlarmPlant.toNotificationServiceItem(): NotificationWorkerItem {
     return NotificationWorkerItem(

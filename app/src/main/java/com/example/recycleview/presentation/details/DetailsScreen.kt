@@ -72,8 +72,8 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.recycleview.R
 import com.example.recycleview.data.realm.plantschedule.PlantScheduleEntity
-import com.example.recycleview.domain.models.PlantScheduleData
-import com.example.recycleview.presentation.details.dialogs.AlarmItem
+import com.example.recycleview.presentation.details.models.PlantScheduleData
+import com.example.recycleview.presentation.details.models.AlarmItem
 import com.example.recycleview.presentation.details.dialogs.AlarmScheduleDialog
 import com.example.recycleview.presentation.dialogs.DeleteDialog
 import com.example.recycleview.presentation.navigation.ScreenNavigation

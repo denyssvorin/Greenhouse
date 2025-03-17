@@ -1,4 +1,4 @@
-package com.example.recycleview.domain.alarm.restartalarm
+package com.example.recycleview.data.scheduler.alarm.restart
 
 import android.content.BroadcastReceiver
 import android.content.Context

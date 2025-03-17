@@ -1,4 +1,4 @@
-package com.example.recycleview.domain.alarm
+package com.example.recycleview.data.scheduler.alarm
 
 data class AlarmPlant (
     val scheduleId: String,
