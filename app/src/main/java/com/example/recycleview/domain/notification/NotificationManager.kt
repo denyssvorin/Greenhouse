@@ -15,7 +15,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.example.recycleview.R
-import com.example.recycleview.presentation.MainActivity
+import com.example.recycleview.presentation.activity.MainActivity
 import java.io.InputStream
 
 class NotificationManager(private val context: Context) {

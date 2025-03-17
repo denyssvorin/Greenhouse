@@ -1,4 +1,4 @@
-package com.example.recycleview.presentation
+package com.example.recycleview.presentation.navigation
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween

@@ -1,4 +1,4 @@
-package com.example.recycleview.presentation
+package com.example.recycleview.presentation.navigation
 
 sealed class ScreenNavigation(val route: String) {
     data object HomeScreen : ScreenNavigation("home_screen")

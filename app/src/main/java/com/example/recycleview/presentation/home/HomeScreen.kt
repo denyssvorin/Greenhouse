@@ -85,8 +85,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.recycleview.R
 import com.example.recycleview.data.realm.plant.PlantEntity
-import com.example.recycleview.presentation.ScreenNavigation
 import com.example.recycleview.presentation.dialogs.DeleteDialog
+import com.example.recycleview.presentation.navigation.ScreenNavigation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import org.koin.androidx.compose.koinViewModel

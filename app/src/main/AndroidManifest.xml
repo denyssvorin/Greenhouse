@@ -22,7 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RecycleView">
         <activity
-            android:name="com.example.recycleview.presentation.MainActivity"
+            android:name="com.example.recycleview.presentation.activity.MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize">

@@ -83,7 +83,7 @@ fun PlantItem(
                     GlideImage(
                         model = R.drawable.plant_placeholder_coloured,
                         contentDescription = stringResource(id = R.string.plant_image),
-                        modifier = modifier
+                        modifier = Modifier
                             .size(150.dp)
                             .padding(top = 16.dp)
                             .padding(padding),

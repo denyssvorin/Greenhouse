@@ -34,7 +34,7 @@ class HomeViewModel (
     ) { query, filterPreferences ->
         Pair(query, filterPreferences)
     }.flatMapLatest { (query, filterPreferences) ->
-        plantDao.getAllPlants(query, filterPreferences.sortOrder)
+        plantDao.getAllPlants(query.trim(), filterPreferences.sortOrder)
     }
 
     val plantFlow: StateFlow<List<PlantEntity>?> =

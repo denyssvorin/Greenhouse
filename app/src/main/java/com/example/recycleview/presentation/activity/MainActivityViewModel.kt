@@ -1,4 +1,4 @@
-package com.example.recycleview.presentation
+package com.example.recycleview.presentation.activity
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

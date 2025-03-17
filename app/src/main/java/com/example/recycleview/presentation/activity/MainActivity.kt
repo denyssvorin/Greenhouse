@@ -1,4 +1,4 @@
-package com.example.recycleview.presentation
+package com.example.recycleview.presentation.activity
 
 import android.Manifest
 import android.app.Activity
@@ -46,6 +46,7 @@ import com.example.recycleview.presentation.dialogs.NotificationPermissionTextPr
 import com.example.recycleview.presentation.dialogs.PermissionDialog
 import com.example.recycleview.presentation.dialogs.ReadExternalStoragePermissionTextProvider
 import com.example.recycleview.presentation.dialogs.ReadMediaImagesPermissionTextProvider
+import com.example.recycleview.presentation.navigation.Navigation
 import com.example.recycleview.presentation.ui.theme.PlantTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

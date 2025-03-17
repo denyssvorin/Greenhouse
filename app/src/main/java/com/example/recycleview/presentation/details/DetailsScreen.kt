@@ -62,6 +62,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -72,10 +73,10 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.example.recycleview.R
 import com.example.recycleview.data.realm.plantschedule.PlantScheduleEntity
 import com.example.recycleview.domain.models.PlantScheduleData
-import com.example.recycleview.presentation.ScreenNavigation
 import com.example.recycleview.presentation.details.dialogs.AlarmItem
 import com.example.recycleview.presentation.details.dialogs.AlarmScheduleDialog
 import com.example.recycleview.presentation.dialogs.DeleteDialog
+import com.example.recycleview.presentation.navigation.ScreenNavigation
 import com.example.recycleview.presentation.utils.days
 import com.example.recycleview.presentation.utils.mappers.calculateNextNotificationDate
 import org.koin.androidx.compose.koinViewModel
@@ -319,7 +320,9 @@ fun DetailsScreen(
                                         modifier = modifier
                                             .size(height = 250.dp, width = Dp.Unspecified)
                                             .align(Alignment.CenterHorizontally),
-                                        contentScale = ContentScale.Inside,
+                                        contentScale = if (plantImageData != R.drawable.plant_placeholder_coloured) {
+                                            ContentScale.Crop
+                                        } else ContentScale.Inside,
                                         alignment = Alignment.Center
                                     )
                                 }
@@ -337,7 +340,8 @@ fun DetailsScreen(
                                     Text(
                                         text = plant?.plantName.toString(),
                                         style = MaterialTheme.typography.titleLarge.copy(
-                                            color = MaterialTheme.colorScheme.onSurface
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            textAlign = TextAlign.Center
                                         ),
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier

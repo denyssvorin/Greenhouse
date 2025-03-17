@@ -3,6 +3,7 @@ package com.example.recycleview.data.realm.plant
 import android.util.Log
 import com.example.recycleview.data.datastore.SortOrder
 import com.example.recycleview.data.realm.RealmDao
+import io.realm.Case
 import io.realm.OrderedRealmCollectionChangeListener
 import io.realm.Realm
 import io.realm.RealmResults
@@ -24,7 +25,7 @@ interface PlantDao : RealmDao<PlantEntity> {
             Log.i("TAG", "getAll thread id ${Thread.currentThread().id}")
 
             getAll()
-                .contains("plantName", searchText)
+                .contains("plantName", searchText, Case.INSENSITIVE)
                 .sort(
                     "plantName", when (sortOrder) {
                         SortOrder.A2Z -> io.realm.Sort.ASCENDING
