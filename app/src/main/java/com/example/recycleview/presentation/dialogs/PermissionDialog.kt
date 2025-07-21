@@ -2,6 +2,7 @@ package com.example.recycleview.presentation.dialogs
 
 import android.content.Context
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,9 +31,7 @@ fun PermissionDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
-            Column(
-                modifier = modifier.fillMaxWidth()
-            ) {
+            Column {
                 Divider()
                 Text(
                     text = if (isPermanentlyDeclined) {
@@ -59,12 +58,15 @@ fun PermissionDialog(
             Text(text = stringResource(R.string.permission_required))
         },
         text = {
-            Text(
-                text = permissionTextProvider.getDescription(
-                    isPermanentlyDeclined = isPermanentlyDeclined,
-                    context = context
+            Box(modifier = modifier.fillMaxWidth()) {
+                Text(
+                    text = permissionTextProvider.getDescription(
+                        isPermanentlyDeclined = isPermanentlyDeclined,
+                        context = context
+                    )
                 )
-            )
+            }
+
         },
         modifier = modifier
     )

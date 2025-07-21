@@ -3,15 +3,19 @@ package com.example.recycleview.di
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.example.recycleview.data.datastore.PreferencesManager
 import com.example.recycleview.data.datastore.PreferencesManagerImpl
+import com.example.recycleview.data.imagemanager.PlantImageManagerImpl
+import com.example.recycleview.data.plant.PlantDao
 import com.example.recycleview.data.plant.PlantDatabase
-import com.example.recycleview.data.repo.PlantRepository
-import com.example.recycleview.data.repo.PlantRepositoryImpl
+import com.example.recycleview.data.plantschedule.PlantScheduleDao
+import com.example.recycleview.data.repository.PlantRepositoryImpl
+import com.example.recycleview.data.repository.PlantScheduleRepositoryImpl
+import com.example.recycleview.data.scheduler.alarm.AlarmSchedulerImpl
 import com.example.recycleview.domain.alarm.AlarmScheduler
-import com.example.recycleview.domain.alarm.AlarmSchedulerImpl
-import com.example.recycleview.domain.imageconverter.PlantImageConverter
-import com.example.recycleview.domain.imageconverter.PlantImageConverterImpl
+import com.example.recycleview.domain.datastore.PreferencesManager
+import com.example.recycleview.domain.imagemanager.PlantImageManager
+import com.example.recycleview.domain.repository.PlantRepository
+import com.example.recycleview.domain.repository.PlantScheduleRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,18 +52,21 @@ object AppModule {
     fun provideApplicationScope() = CoroutineScope(SupervisorJob())
 
     @Provides
-    fun provideRepo(db: PlantDatabase): PlantRepository {
-        return PlantRepositoryImpl(db)
-    }
+    fun providePlantRepository(plantDao: PlantDao): PlantRepository =
+        PlantRepositoryImpl(plantDao)
 
     @Provides
-    fun provideImageConverter(context: Application): PlantImageConverter {
-        return PlantImageConverterImpl(context)
+    fun provideImageConverter(context: Application): PlantImageManager {
+        return PlantImageManagerImpl(context)
     }
 
     @Provides
     fun provideAlarmScheduler(@ApplicationContext context: Context): AlarmScheduler =
         AlarmSchedulerImpl(context)
+
+    @Provides
+    fun providePlantScheduleRepository(plantScheduleDao: PlantScheduleDao): PlantScheduleRepository =
+        PlantScheduleRepositoryImpl(plantScheduleDao)
 }
 
 @Retention(AnnotationRetention.RUNTIME)

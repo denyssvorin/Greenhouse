@@ -2,12 +2,9 @@ package com.example.recycleview.data.plant
 
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import androidx.room.Upsert
-import com.example.recycleview.data.datastore.SortOrder
+import com.example.recycleview.domain.datastore.SortOrder
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -35,14 +32,8 @@ interface PlantDao {
     @Query("SELECT * FROM plant_table WHERE plantId LIKE '%' || :id || '%'")
     fun getSinglePlant(id: String): PlantEntity
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertPlant(plantEntity: PlantEntity)
-
     @Upsert
     fun upsertPlant(plantEntity: PlantEntity)
-
-    @Update
-    fun updatePlant(plantEntity: PlantEntity)
 
     @Delete
     fun deletePlant(plantEntity: PlantEntity)

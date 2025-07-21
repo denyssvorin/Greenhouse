@@ -50,7 +50,7 @@ fun PlantItem(
             .fillMaxSize(),
         elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
     ) {
         Box(modifier = modifier.fillMaxSize()) {
@@ -66,7 +66,6 @@ fun PlantItem(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = modifier.align(Alignment.Center)
             ) {
-
                 val plantImageData = plantEntity?.imagePath
                 if (plantImageData != null) {
                     GlideImage(
@@ -83,7 +82,7 @@ fun PlantItem(
                     GlideImage(
                         model = R.drawable.plant_placeholder_coloured,
                         contentDescription = stringResource(id = R.string.plant_image),
-                        modifier = modifier
+                        modifier = Modifier
                             .size(150.dp)
                             .padding(top = 16.dp)
                             .padding(padding),
@@ -97,7 +96,7 @@ fun PlantItem(
                     Modifier
                         .padding(8.dp),
                     maxLines = 1,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    color = MaterialTheme.colorScheme.onSurface,
                     overflow = TextOverflow.Ellipsis,
                     fontWeight = FontWeight.Medium,
                     fontSize = 16.sp,

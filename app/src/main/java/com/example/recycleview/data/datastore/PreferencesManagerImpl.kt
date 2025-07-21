@@ -8,18 +8,19 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.recycleview.domain.datastore.PreferencesManager
+import com.example.recycleview.domain.datastore.SortOrder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.cancellation.CancellationException
 
 private const val TAG = "PreferenceManager"
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
-
-enum class SortOrder { A2Z, Z2A }
 
 data class FilterPreferences(val sortOrder: SortOrder)
 
@@ -46,8 +47,15 @@ class PreferencesManagerImpl @Inject constructor(@ApplicationContext context: Co
         }
 
     override suspend fun saveSortOrder(sortOrder: SortOrder) {
-        dataStore.edit { preferences ->
-            preferences[PreferencesKeys.SORT_ORDER] = sortOrder.name
+        try {
+            dataStore.edit { preferences ->
+                preferences[PreferencesKeys.SORT_ORDER] = sortOrder.name
+            }
+        } catch (e: CancellationException) {
+            e.printStackTrace()
+            throw e
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

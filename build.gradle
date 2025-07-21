@@ -7,26 +7,26 @@ buildscript {
         // Sdk and tools
         minSdkVersion = 26
         targetSdkVersion = 34
-        compileSdkVersion = 34
+        compileSdkVersion = 35
 
         // App dependencies
         appCompatVersion = "1.6.1"
         constraintLayoutVersion = "2.1.4"
         coroutinesVersion = "1.6.4"
         dataStoreVersion = "1.1.0-alpha01"
-        espressoVersion = "3.5.1"
+        espressoVersion = "3.6.1"
         fragmentVersion = "1.5.5"
         gradleVersion = '8.3.0'
         hiltAndroidXVersion = "1.2.0"
         hiltVersion = "2.51.1"
         junitVersion = "4.13.2"
-        kotlinVersion = "1.9.10"
+        kotlinVersion = "1.9.21"
         ktxVersion = "1.9.0"
         lifecycleVersion = "2.5.1"
         materialVersion = "1.6.1"
         navigationVersion = "2.5.3"
         roomVersion = "2.6.1"
-        testExtJunitVersion = "1.1.5"
+        testExtJunitVersion = "1.2.1"
     }
 
     repositories {

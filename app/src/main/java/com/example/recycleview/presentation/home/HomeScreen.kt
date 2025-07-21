@@ -43,10 +43,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -88,8 +88,8 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.recycleview.R
 import com.example.recycleview.domain.models.Plant
-import com.example.recycleview.presentation.ScreenNavigation
 import com.example.recycleview.presentation.dialogs.DeleteDialog
+import com.example.recycleview.presentation.navigation.ScreenNavigation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
@@ -100,14 +100,14 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val plantList = viewModel.plantPagingFlow.collectAsLazyPagingItems()
-    val screenState = viewModel.homeScreenState.collectAsStateWithLifecycle()
+    val topAppBarState = viewModel.topAppBarState.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-    val selectedItems = rememberSaveable { mutableStateOf(emptySet<String>()) }
+    val selectedItemsIds = rememberSaveable { mutableStateOf(emptySet<String>()) }
     val inSelectionMode by remember {
         derivedStateOf {
-            selectedItems.value.isNotEmpty()
+            selectedItemsIds.value.isNotEmpty()
         }
     }
 
@@ -118,10 +118,10 @@ fun HomeScreen(
             title = stringResource(R.string.delete_items),
             text = stringResource(R.string.are_you_sure_you_want_to_delete_the_items),
             onConfirmClick = {
-                selectedItems.value.forEach { plantId ->
+                selectedItemsIds.value.forEach { plantId ->
                     viewModel.deleteSelectedPlantsById(plantId)
                 }
-                selectedItems.value = emptySet()
+                selectedItemsIds.value = emptySet()
 
                 openDeleteDialog = false
 
@@ -138,8 +138,9 @@ fun HomeScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             Crossfade(
-                targetState = screenState.value.isSearchBarVisible,
-                animationSpec = tween(durationMillis = 500), label = ""
+                targetState = topAppBarState.value.isSearchBarVisible,
+                animationSpec = tween(durationMillis = 500),
+                label = ""
             ) { searchIsOpen ->
                 if (searchIsOpen) {
                     SearchAppBar(
@@ -166,7 +167,7 @@ fun HomeScreen(
                         onSortMenuDismiss = {
                             viewModel.onAction(UserAction.SortMenuDismiss)
                         },
-                        isSortMenuVisible = screenState.value.isSortMenuVisible,
+                        isSortMenuVisible = topAppBarState.value.isSortMenuVisible,
                         onSortItemA2ZClicked = {
                             viewModel.onAction(
                                 UserAction.SortItemClicked(SortType.A2Z)
@@ -182,7 +183,7 @@ fun HomeScreen(
                             openDeleteDialog = true
                         },
                         onCancelDeleteClicked = {
-                            selectedItems.value = emptySet()
+                            selectedItemsIds.value = emptySet()
                         }
                     )
                 }
@@ -249,7 +250,7 @@ fun HomeScreen(
                                 )
                                 Spacer(modifier = modifier.size(8.dp))
                                 Text(
-                                    text = if (!screenState.value.isSearchBarVisible) {
+                                    text = if (!topAppBarState.value.isSearchBarVisible) {
                                         stringResource(R.string.your_personal_list_is_empty)
                                     } else {
                                         stringResource(R.string.no_results)
@@ -265,9 +266,9 @@ fun HomeScreen(
                     }
                     else -> {
                         PlantGrid(
-                            plantEntityList = plantList.itemSnapshotList.items,
+                            plantList = plantList.itemSnapshotList.items,
                             navController = navController,
-                            selectedIds = selectedItems,
+                            selectedIds = selectedItemsIds,
                         )
                     }
                 }
@@ -331,7 +332,7 @@ fun SearchAppBar(
                 )
             }
         },
-        colors = TextFieldDefaults.outlinedTextFieldColors(
+        colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = MaterialTheme.colorScheme.primary.copy(
                 alpha = ContentAlpha.medium
             ),
@@ -442,7 +443,7 @@ fun HomeTopBar(
 @Composable
 private fun PlantGrid(
     modifier: Modifier = Modifier,
-    plantEntityList: List<Plant>,
+    plantList: List<Plant>,
     navController: NavHostController,
     selectedIds: MutableState<Set<String>>,
 ) {
@@ -461,8 +462,8 @@ private fun PlantGrid(
     LazyVerticalGrid(
         state = state,
         columns = GridCells.Adaptive(minSize = 120.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
             .padding(8.dp)
             .photoGridDragHandler(
@@ -473,18 +474,18 @@ private fun PlantGrid(
                 autoScrollThreshold = with(LocalDensity.current) { 40.dp.toPx() },
             )
     ) {
-        items(plantEntityList, key = { it.id }) { plantEntity ->
-            val selected by remember { derivedStateOf { selectedIds.value.contains(plantEntity.id) } }
+        items(plantList, key = { it.id }) { plant ->
+            val selected by remember { derivedStateOf { selectedIds.value.contains(plant.id) } }
 
             PlantItem(
-                plantEntity = plantEntity,
+                plantEntity = plant,
                 isSelected = selected,
                 isInSelectableMode = inSelectionMode,
                 modifier = modifier
                     .semantics {
                         if (!inSelectionMode) {
                             onLongClick("Select") {
-                                selectedIds.value += plantEntity.id
+                                selectedIds.value += plant.id
                                 true
                             }
                         }
@@ -497,9 +498,9 @@ private fun PlantGrid(
                                 indication = null, // do not show a ripple
                                 onValueChange = {
                                     if (it) {
-                                        selectedIds.value += plantEntity.id
+                                        selectedIds.value += plant.id
                                     } else {
-                                        selectedIds.value -= plantEntity.id
+                                        selectedIds.value -= plant.id
                                     }
                                 }
                             )
@@ -507,7 +508,7 @@ private fun PlantGrid(
                             .clickable {
                                 navController.navigate(
                                     ScreenNavigation.DetailsScreen.withArgs(
-                                        plantEntity.id
+                                        plant.id
                                     )
                                 )
                             }

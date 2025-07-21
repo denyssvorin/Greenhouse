@@ -6,16 +6,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import androidx.paging.map
-import com.example.recycleview.data.datastore.PreferencesManager
-import com.example.recycleview.data.datastore.SortOrder
-import com.example.recycleview.data.plant.PlantEntity
-import com.example.recycleview.data.repo.PlantRepository
+import com.example.recycleview.domain.datastore.PreferencesManager
+import com.example.recycleview.domain.datastore.SortOrder
 import com.example.recycleview.domain.models.Plant
-import com.example.recycleview.presentation.uitls.mappers.toPlant
+import com.example.recycleview.domain.repository.PlantRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,7 +20,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,33 +33,27 @@ class HomeViewModel @Inject constructor(
     private val searchQuery = MutableStateFlow("")
     private val preferencesFlow = preferencesManager.preferencesFlow
 
-    @OptIn(FlowPreview::class)
-    private val _plantEntityPagingFlow: Flow<PagingData<PlantEntity>> = combine(
+    private val _plantEntityPagingFlow: Flow<PagingData<Plant>> = combine(
         searchQuery.debounce(300),
         preferencesFlow,
     ) { query, filterPreferences, ->
         Pair(query, filterPreferences)
     }.flatMapLatest { (query, filterPreferences) ->
-        repository.getPagingPlants(query, filterPreferences.sortOrder)
+        repository.getPagingPlants(query.trim(), filterPreferences.sortOrder)
     }
 
-    val plantPagingFlow: Flow<PagingData<Plant>> =
-        _plantEntityPagingFlow.map { pagingData: PagingData<PlantEntity> ->
-            pagingData.map { data: PlantEntity ->
-                data.toPlant()
-            }
-        }
+    val plantPagingFlow: Flow<PagingData<Plant>> = _plantEntityPagingFlow
 
     var searchText by mutableStateOf(searchQuery.value)
         private set
 
-    private val _homeScreenState = MutableStateFlow(HomeScreenState())
-    val homeScreenState: StateFlow<HomeScreenState> = _homeScreenState
+    private val _topAppBarState = MutableStateFlow(PlantScreenTopAppBarState())
+    val topAppBarState: StateFlow<PlantScreenTopAppBarState> = _topAppBarState
         .asStateFlow()
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
-            HomeScreenState()
+            PlantScreenTopAppBarState()
         )
 
     init {
@@ -82,19 +71,19 @@ class HomeViewModel @Inject constructor(
     fun onAction(userAction: UserAction) {
         when (userAction) {
             UserAction.CloseIconClicked -> {
-                _homeScreenState.value = _homeScreenState.value.copy(isSearchBarVisible = false)
+                _topAppBarState.value = _topAppBarState.value.copy(isSearchBarVisible = false)
             }
 
             UserAction.SearchIconClicked -> {
-                _homeScreenState.value = _homeScreenState.value.copy(isSearchBarVisible = true)
+                _topAppBarState.value = _topAppBarState.value.copy(isSearchBarVisible = true)
             }
 
             UserAction.SortIconClicked -> {
-                _homeScreenState.value = _homeScreenState.value.copy(isSortMenuVisible = true)
+                _topAppBarState.value = _topAppBarState.value.copy(isSortMenuVisible = true)
             }
 
             UserAction.SortMenuDismiss -> {
-                _homeScreenState.value = _homeScreenState.value.copy(isSortMenuVisible = false)
+                _topAppBarState.value = _topAppBarState.value.copy(isSortMenuVisible = false)
             }
 
             is UserAction.SortItemClicked -> {
@@ -108,12 +97,12 @@ class HomeViewModel @Inject constructor(
 
     private fun sortPlantList(sortOrder: SortOrder) = viewModelScope.launch(Dispatchers.IO) {
         preferencesManager.saveSortOrder(sortOrder)
-        _homeScreenState.value = _homeScreenState.value.copy(
+        _topAppBarState.value = _topAppBarState.value.copy(
             isSortMenuVisible = false
         )
     }
 
-    fun deleteSelectedPlantsById(plantId: String) = viewModelScope.launch(Dispatchers.IO) {
+    fun deleteSelectedPlantsById(plantId: String) = viewModelScope.launch {
         repository.delete(plantId)
     }
 }
@@ -131,7 +120,7 @@ enum class SortType {
     Z2A
 }
 
-data class HomeScreenState(
+data class PlantScreenTopAppBarState(
     val isSearchBarVisible: Boolean = false,
     val isSortMenuVisible: Boolean = false
 )

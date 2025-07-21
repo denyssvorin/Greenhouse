@@ -25,4 +25,3 @@ data class PlantScheduleEntity(
     val daysInterval: Int = 0,
     val firstTriggerDate: String = "0"
 )
-

@@ -2,19 +2,16 @@ package com.example.recycleview.presentation.details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.recycleview.data.plant.PlantDao
-import com.example.recycleview.data.plantschedule.PlantScheduleDao
 import com.example.recycleview.domain.alarm.AlarmScheduler
 import com.example.recycleview.domain.models.Plant
 import com.example.recycleview.domain.models.PlantSchedule
-import com.example.recycleview.domain.models.PlantScheduleData
-import com.example.recycleview.presentation.uitls.mappers.toAlarmPlant
-import com.example.recycleview.presentation.uitls.mappers.toPlant
-import com.example.recycleview.presentation.uitls.mappers.toPlantEntity
-import com.example.recycleview.presentation.uitls.mappers.toPlantSchedule
-import com.example.recycleview.presentation.uitls.mappers.toPlantScheduleEntity
+import com.example.recycleview.domain.repository.PlantRepository
+import com.example.recycleview.domain.repository.PlantScheduleRepository
+import com.example.recycleview.presentation.details.models.AlarmItem
+import com.example.recycleview.presentation.details.models.PlantScheduleData
+import com.example.recycleview.presentation.utils.mappers.toAlarmPlant
+import com.example.recycleview.presentation.utils.mappers.toPlantSchedule
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,8 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
-    private val plantDao: PlantDao,
-    private val plantScheduleDao: PlantScheduleDao,
+    private val plantRepository: PlantRepository,
+    private val plantScheduleRepository: PlantScheduleRepository,
     private val alarmScheduler: AlarmScheduler
 ) : ViewModel() {
 
@@ -40,25 +37,30 @@ class DetailsViewModel @Inject constructor(
         )
 
     private val _plantScheduleDataList = MutableStateFlow<List<PlantSchedule>>(emptyList())
-    val plantScheduleDataList: StateFlow<List<PlantSchedule>> =
-        _plantScheduleDataList
-            .asStateFlow()
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000),
-                emptyList()
-            )
+    val plantScheduleDataList: StateFlow<List<PlantSchedule>> = _plantScheduleDataList
+        .asStateFlow()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            emptyList()
+        )
 
-    fun getPlant(plantId: String) = viewModelScope.launch(Dispatchers.IO) {
-        val plant = plantDao.getSinglePlant(plantId).toPlant()
+    private val _plantNotificationItem = MutableStateFlow<AlarmItem?>(null)
+    val plantNotificationItem: StateFlow<AlarmItem?> = _plantNotificationItem
+
+    fun getPlant(plantId: String) = viewModelScope.launch {
+        val plant = plantRepository.getSinglePlant(plantId)
         _plantData.value = plant
     }
 
-    fun getPlantSchedules(plantId: String) = viewModelScope.launch(Dispatchers.IO) {
-        plantScheduleDao.getPlantSchedulesByPlantId(plantId).collect { plantScheduleEntityList ->
-            val updatedList = plantScheduleEntityList.map { it.toPlantSchedule() }
-            _plantScheduleDataList.value = updatedList.toMutableList()
+    fun getPlantSchedules(plantId: String) = viewModelScope.launch {
+        plantScheduleRepository.getPlantSchedulesByPlantId(plantId).collect { plantScheduleList ->
+            _plantScheduleDataList.value = plantScheduleList
         }
+    }
+
+    fun setPlantNotificationItem(alarmItem: AlarmItem?) {
+        _plantNotificationItem.value = alarmItem
     }
 
     fun scheduleWatering(
@@ -81,17 +83,26 @@ class DetailsViewModel @Inject constructor(
         alarmScheduler.cancel(scheduleId)
     }
 
-    fun saveWateringSchedule(item: PlantScheduleData, scheduleId: String, plantEntityId: String) =
-        viewModelScope.launch(Dispatchers.IO) {
-            val entity = item.toPlantScheduleEntity(scheduleId, plantEntityId)
-            plantScheduleDao.insertPlantSchedule(entity)
+    fun saveWateringSchedule(plantScheduleData: PlantScheduleData, scheduleId: String, plantId: String) =
+        viewModelScope.launch {
+            plantScheduleRepository.insertPlantSchedule(plantScheduleData.toPlantSchedule(scheduleId, plantId))
         }
 
-    fun deleteSchedule(plantSchedule: PlantSchedule) = viewModelScope.launch(Dispatchers.IO) {
-        plantScheduleDao.deleteSchedule(plantSchedule.toPlantScheduleEntity())
+    fun deleteSchedule(plantSchedule: PlantSchedule) = viewModelScope.launch {
+        plantScheduleRepository.deleteSchedule(plantSchedule)
     }
 
-    fun deletePlant(plant: Plant) = viewModelScope.launch(Dispatchers.IO) {
-        plantDao.deletePlant(plant.toPlantEntity())
+    fun deletePlant(plantId: String, scheduleList: List<PlantSchedule>) = viewModelScope.launch {
+        plantRepository.delete(plantId)
+        cancelScheduleList(scheduleList)
+    }
+
+    private fun cancelScheduleList(scheduleList: List<PlantSchedule>) {
+        scheduleList.forEach { alarmScheduler.cancel(it.id) }
+    }
+
+
+    fun updateWateringSchedule(plantScheduleData: PlantScheduleData, scheduleId: String, plantId: String) = viewModelScope.launch {
+        plantScheduleRepository.updatePlantSchedule(plantScheduleData.toPlantSchedule(scheduleId, plantId))
     }
 }

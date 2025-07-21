@@ -24,4 +24,4 @@ The mobile app will help you take care of your plants. You can add photos from t
 
 ## Video sample
 
-https://github.com/user-attachments/assets/53725148-b3a1-435b-b4ab-53c8f5e33d3e
+https://github.com/user-attachments/assets/58d5902b-bd84-45f6-b133-e9b31a61fd3e
