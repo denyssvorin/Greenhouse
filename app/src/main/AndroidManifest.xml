@@ -23,15 +23,28 @@
         <activity
             android:name="com.example.recycleview.presentation.activity.MainActivity"
             android:exported="true"
-            android:launchMode="singleTask"
+            android:launchMode="standard"
             android:windowSoftInputMode="adjustResize">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="plant"
+                    android:scheme="greenhouse" />
+            </intent-filter>
         </activity>
+
         <receiver android:name="com.example.recycleview.data.scheduler.alarm.AlarmReceiver" />
+
         <receiver
             android:name="com.example.recycleview.data.scheduler.alarm.restart.RestartAlarmsReceiver"
             android:exported="false">
@@ -39,6 +52,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"

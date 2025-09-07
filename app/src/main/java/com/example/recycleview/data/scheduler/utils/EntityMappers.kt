@@ -39,6 +39,7 @@ fun PlantScheduleEntity.toAlarmPlant(
 fun PlantEntity.toNotificationItem(scheduleId: String, notificationMessage: String): NotificationItem {
     return NotificationItem(
         scheduleId = scheduleId,
+        plantId = plantId,
         plantImagePath = plantImagePath,
         plantName = plantName,
         notificationMessage = notificationMessage

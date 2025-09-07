@@ -302,8 +302,7 @@ fun DetailsScreen(
                             .padding(8.dp)
                     ) {
                         LazyColumn(
-                            modifier = modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            modifier = modifier.fillMaxWidth()
                         ) {
                             item {
                                 Card(
@@ -362,7 +361,11 @@ fun DetailsScreen(
                                     )
                                 }
                             }
-                            items(plantScheduleList) { item: PlantSchedule ->
+                            item { Spacer(modifier = modifier.height(8.dp)) }
+                            items(
+                                items = plantScheduleList,
+                                key = { it.id }
+                            ) { item: PlantSchedule ->
                                 var showConfirmDialog by remember { mutableStateOf(false) }
 
                                 AnimatedVisibility(
@@ -482,6 +485,7 @@ fun WateringNotificationItem(
     Box(
         modifier = modifier
             .fillMaxSize()
+            .padding(bottom = 8.dp)
             .clip(RoundedCornerShape(12.dp))
             .clickable {
                 onItemClick()

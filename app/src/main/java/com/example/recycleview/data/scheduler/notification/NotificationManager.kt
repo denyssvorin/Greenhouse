@@ -14,8 +14,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.net.toUri
 import com.example.recycleview.R
-import com.example.recycleview.presentation.activity.MainActivity
 import java.io.InputStream
 
 class NotificationManager(private val context: Context) {
@@ -38,10 +38,11 @@ class NotificationManager(private val context: Context) {
     }
 
     fun createNotification(item: NotificationItem) {
-        val activityIntent = Intent(context, MainActivity::class.java)
+        val intent = Intent(Intent.ACTION_VIEW, "greenhouse://plant/${item.plantId}".toUri())
         val pendingIntent = PendingIntent.getActivity(
             context,
-            0, activityIntent,
+            0,
+            intent,
             PendingIntent.FLAG_IMMUTABLE
         )
 

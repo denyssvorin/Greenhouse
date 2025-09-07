@@ -22,7 +22,7 @@ class AlarmSchedulerImpl @Inject constructor(
                 putExtra(EXTRA_NOTIFICATION_ALARM_ITEM, alarmItem.toNotificationServiceItem())
             }
 
-            alarmManager.setInexactRepeating(
+            alarmManager.setRepeating(
                 AlarmManager.RTC_WAKEUP,
                 alarmItem.firstTriggerTimeAndDateInMillis,
                 alarmItem.repeatIntervalDaysInMillis,

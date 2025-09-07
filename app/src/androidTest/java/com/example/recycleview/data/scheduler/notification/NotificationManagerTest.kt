@@ -73,6 +73,7 @@ class NotificationManagerTest {
 
         val testItem = NotificationItem(
             scheduleId = "test123",
+            plantId = "123",
             plantName = "Aloe Vera",
             plantImagePath = Uri.parse("android.resource://${context.packageName}/${R.drawable.plant_placeholder_coloured}").toString(),
             notificationMessage = "Time to water your Aloe Vera!"

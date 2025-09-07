@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.example.recycleview.presentation.details.DetailsScreen
 import com.example.recycleview.presentation.edit.EditScreen
 import com.example.recycleview.presentation.home.HomeScreen
@@ -96,6 +97,9 @@ fun Navigation() {
                 navArgument("plant_id") {
                     type = NavType.StringType
                 }
+            ),
+            deepLinks = listOf(
+                navDeepLink { uriPattern = "greenhouse://plant/{plant_id}" }
             ),
             enterTransition = {
                 fadeIn(

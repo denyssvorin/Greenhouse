@@ -63,7 +63,7 @@ fun AlarmScheduleDialog(
     modifier: Modifier = Modifier
 ) {
     var pickedDays by rememberSaveable {
-        mutableStateOf(alarmItem?.days ?: "0")
+        mutableStateOf(alarmItem?.days ?: "1")
     }
 
     val isDaysInputIncorrect by remember {
