@@ -13,10 +13,8 @@ import com.example.recycleview.data.scheduler.alarm.AlarmSchedulerImpl.Companion
 import com.example.recycleview.data.scheduler.notification.NotificationWorker
 import com.example.recycleview.data.scheduler.notification.NotificationWorkerItem
 import com.google.gson.Gson
-import dagger.hilt.android.AndroidEntryPoint
 import kotlin.coroutines.cancellation.CancellationException
 
-@AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {

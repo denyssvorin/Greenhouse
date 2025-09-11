@@ -2,19 +2,19 @@ package com.example.recycleview.data.scheduler.notification
 
 import android.content.Context
 import android.util.Log
-import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.recycleview.data.plant.PlantDao
 import com.example.recycleview.data.scheduler.utils.toNotificationItem
+import com.example.recycleview.di.worker.ChildWorkerFactory
 import com.google.gson.Gson
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.cancellation.CancellationException
 
-@HiltWorker
 class NotificationWorker @AssistedInject constructor(
     private val plantDao: PlantDao,
     @Assisted private val context: Context,
@@ -49,6 +49,12 @@ class NotificationWorker @AssistedInject constructor(
             }
         }
     }
+
+    @AssistedFactory
+    interface Factory : ChildWorkerFactory {
+        override fun create(appContext: Context, params: WorkerParameters): NotificationWorker
+    }
+
 
     companion object {
         const val KEY_DATA = "KEY_DATA"

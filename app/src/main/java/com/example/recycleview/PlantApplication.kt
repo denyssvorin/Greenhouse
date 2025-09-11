@@ -1,18 +1,21 @@
 package com.example.recycleview
 
 import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import dagger.hilt.android.HiltAndroidApp
-import javax.inject.Inject
+import com.example.recycleview.di.AppComponent
+import com.example.recycleview.di.DaggerAppComponent
 
-@HiltAndroidApp
 class PlantApplication : Application(), Configuration.Provider {
 
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
+    lateinit var appComponent: AppComponent
+
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
-            .setWorkerFactory(workerFactory)
+            .setWorkerFactory(appComponent.workerFactory())
             .build()
+
+    override fun onCreate() {
+        super.onCreate()
+        appComponent = DaggerAppComponent.factory().create(applicationContext)
+    }
 }

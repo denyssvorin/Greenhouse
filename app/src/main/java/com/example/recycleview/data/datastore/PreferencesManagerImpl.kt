@@ -10,7 +10,6 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.recycleview.domain.datastore.PreferencesManager
 import com.example.recycleview.domain.datastore.SortOrder
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
@@ -25,7 +24,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 data class FilterPreferences(val sortOrder: SortOrder)
 
 @Singleton
-class PreferencesManagerImpl @Inject constructor(@ApplicationContext context: Context) :
+class PreferencesManagerImpl @Inject constructor(context: Context) :
     PreferencesManager {
 
     private val dataStore = context.dataStore

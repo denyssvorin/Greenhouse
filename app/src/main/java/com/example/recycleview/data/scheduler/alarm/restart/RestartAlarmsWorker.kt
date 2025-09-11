@@ -2,28 +2,28 @@ package com.example.recycleview.data.scheduler.alarm.restart
 
 import android.content.Context
 import android.util.Log
-import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.recycleview.data.plant.PlantDao
 import com.example.recycleview.data.plantschedule.PlantScheduleDao
 import com.example.recycleview.data.plantschedule.PlantScheduleEntity
 import com.example.recycleview.data.scheduler.utils.toAlarmPlant
+import com.example.recycleview.di.worker.ChildWorkerFactory
 import com.example.recycleview.domain.alarm.AlarmScheduler
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.cancellation.CancellationException
 
-@HiltWorker
 class RestartAlarmsWorker @AssistedInject constructor(
     private val plantDao: PlantDao,
     private val plantScheduleDao: PlantScheduleDao,
     private val alarmScheduler: AlarmScheduler,
     @Assisted private val context: Context,
     @Assisted private val parameters: WorkerParameters,
-) : CoroutineWorker(context, parameters) {
+): CoroutineWorker(context, parameters) {
 
     override suspend fun doWork(): Result {
         return withContext(Dispatchers.IO) {
@@ -54,6 +54,11 @@ class RestartAlarmsWorker @AssistedInject constructor(
             }
 
         }
+    }
+
+    @AssistedFactory
+    interface Factory: ChildWorkerFactory {
+        override fun create(appContext: Context, params: WorkerParameters): RestartAlarmsWorker
     }
 
     companion object {

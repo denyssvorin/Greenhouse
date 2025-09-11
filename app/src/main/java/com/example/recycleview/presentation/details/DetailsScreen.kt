@@ -66,7 +66,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -79,6 +79,7 @@ import com.example.recycleview.presentation.details.models.PlantScheduleData
 import com.example.recycleview.presentation.dialogs.DeleteDialog
 import com.example.recycleview.presentation.navigation.ScreenNavigation
 import com.example.recycleview.presentation.utils.days
+import com.example.recycleview.presentation.utils.di.daggerViewModel
 import com.example.recycleview.presentation.utils.mappers.calculateNextNotificationDate
 import java.util.UUID
 
@@ -91,8 +92,10 @@ fun DetailsScreen(
     modifier: Modifier = Modifier,
     plantId: String,
     navController: NavHostController,
-    viewModel: DetailsViewModel = hiltViewModel(),
+    viewModelFactory: ViewModelProvider.Factory
 ) {
+    val viewModel: DetailsViewModel = daggerViewModel(viewModelFactory)
+
     val plant by viewModel.plantData.collectAsStateWithLifecycle()
     val plantScheduleList by viewModel.plantScheduleDataList.collectAsStateWithLifecycle()
 

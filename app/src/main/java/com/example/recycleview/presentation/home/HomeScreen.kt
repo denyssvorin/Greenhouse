@@ -81,7 +81,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toIntRect
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
@@ -90,6 +90,7 @@ import com.example.recycleview.R
 import com.example.recycleview.domain.models.Plant
 import com.example.recycleview.presentation.dialogs.DeleteDialog
 import com.example.recycleview.presentation.navigation.ScreenNavigation
+import com.example.recycleview.presentation.utils.di.daggerViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
@@ -97,8 +98,10 @@ import kotlinx.coroutines.isActive
 fun HomeScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewModel: HomeViewModel = hiltViewModel(),
+    viewModelFactory: ViewModelProvider.Factory
 ) {
+    val viewModel: HomeViewModel = daggerViewModel(factory = viewModelFactory)
+
     val plantList = viewModel.plantPagingFlow.collectAsLazyPagingItems()
     val topAppBarState = viewModel.topAppBarState.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current

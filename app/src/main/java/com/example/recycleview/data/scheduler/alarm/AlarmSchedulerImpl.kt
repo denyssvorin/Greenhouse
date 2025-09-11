@@ -7,15 +7,15 @@ import android.content.Intent
 import com.example.recycleview.data.scheduler.utils.toNotificationServiceItem
 import com.example.recycleview.domain.alarm.AlarmPlant
 import com.example.recycleview.domain.alarm.AlarmScheduler
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
 class AlarmSchedulerImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+    private val context: Context
 ) : AlarmScheduler {
 
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
+
     override fun schedule(alarmItem: AlarmPlant) {
         try {
             val intent = Intent(context, AlarmReceiver::class.java).apply {

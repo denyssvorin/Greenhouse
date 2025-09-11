@@ -11,7 +11,6 @@ import com.example.recycleview.presentation.details.models.AlarmItem
 import com.example.recycleview.presentation.details.models.PlantScheduleData
 import com.example.recycleview.presentation.utils.mappers.toAlarmPlant
 import com.example.recycleview.presentation.utils.mappers.toPlantSchedule
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
 class DetailsViewModel @Inject constructor(
     private val plantRepository: PlantRepository,
     private val plantScheduleRepository: PlantScheduleRepository,

@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.recycleview.domain.imagemanager.PlantImageManager
 import com.example.recycleview.domain.models.Plant
 import com.example.recycleview.domain.repository.PlantRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
 class EditPlantViewModel @Inject constructor(
     private val plantRepository: PlantRepository,
     private val plantImageManager: PlantImageManager,

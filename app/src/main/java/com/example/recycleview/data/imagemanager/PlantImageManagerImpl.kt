@@ -1,6 +1,5 @@
 package com.example.recycleview.data.imagemanager
 
-import android.app.Application
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
@@ -9,7 +8,6 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.core.net.toUri
 import com.example.recycleview.domain.imagemanager.PlantImageManager
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -19,7 +17,7 @@ import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
 class PlantImageManagerImpl @Inject constructor(
-    @ApplicationContext private val context: Application,
+    private val context: Context,
 ) : PlantImageManager {
     override suspend fun mapPhotosFromExternalStorage(imagePath: String): String {
         return withContext(Dispatchers.IO) {

@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,7 +19,7 @@ import com.example.recycleview.presentation.edit.EditScreen
 import com.example.recycleview.presentation.home.HomeScreen
 
 @Composable
-fun Navigation() {
+fun Navigation(viewModelFactory: ViewModelProvider.Factory) {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
@@ -37,7 +38,7 @@ fun Navigation() {
                 )
             }
         ) {
-            HomeScreen(navController = navController)
+            HomeScreen(navController = navController, viewModelFactory = viewModelFactory)
         }
 
         composable(
@@ -53,7 +54,11 @@ fun Navigation() {
                 )
             }
         ) {
-            EditScreen(plantId = null, navController = navController)
+            EditScreen(
+                plantId = null,
+                navController = navController,
+                viewModelFactory = viewModelFactory
+            )
         }
 
         composable(
@@ -75,7 +80,7 @@ fun Navigation() {
                 )
             },
             exitTransition = {
-                slideOutHorizontally (
+                slideOutHorizontally(
                     targetOffsetX = { 1000 },
                     animationSpec = tween(
                         durationMillis = 400,
@@ -87,7 +92,11 @@ fun Navigation() {
             },
         ) { navBackStackEntry ->
             navBackStackEntry.arguments?.getString("plant_id")?.let { plantId ->
-                EditScreen(plantId = plantId, navController = navController)
+                EditScreen(
+                    plantId = plantId,
+                    navController = navController,
+                    viewModelFactory = viewModelFactory
+                )
             }
         }
 
@@ -113,7 +122,11 @@ fun Navigation() {
             }
         ) { navBackStackEntry ->
             navBackStackEntry.arguments?.getString("plant_id")?.let {
-                DetailsScreen(plantId = it, navController = navController)
+                DetailsScreen(
+                    plantId = it,
+                    navController = navController,
+                    viewModelFactory = viewModelFactory
+                )
             }
         }
     }

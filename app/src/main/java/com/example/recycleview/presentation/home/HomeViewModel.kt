@@ -10,7 +10,6 @@ import com.example.recycleview.domain.datastore.PreferencesManager
 import com.example.recycleview.domain.datastore.SortOrder
 import com.example.recycleview.domain.models.Plant
 import com.example.recycleview.domain.repository.PlantRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +23,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: PlantRepository,
     private val preferencesManager: PreferencesManager

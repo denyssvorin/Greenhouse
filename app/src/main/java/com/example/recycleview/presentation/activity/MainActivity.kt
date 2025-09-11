@@ -37,10 +37,12 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.recycleview.PlantApplication
 import com.example.recycleview.R
 import com.example.recycleview.presentation.dialogs.NotificationPermissionTextProvider
 import com.example.recycleview.presentation.dialogs.PermissionDialog
@@ -48,201 +50,209 @@ import com.example.recycleview.presentation.dialogs.ReadExternalStoragePermissio
 import com.example.recycleview.presentation.dialogs.ReadMediaImagesPermissionTextProvider
 import com.example.recycleview.presentation.navigation.Navigation
 import com.example.recycleview.presentation.ui.theme.PlantTheme
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        (this.application as PlantApplication).appComponent.inject(this)
+
         setContent {
             PlantTheme {
                 StartWithPermissionsCheck(this)
             }
         }
     }
-}
-@Composable
-fun StartWithPermissionsCheck(activity: Activity) {
-    val readMediaPermission: String =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Manifest.permission.READ_MEDIA_IMAGES
-        } else {
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        }
 
-    val postNotificationPermission: String =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Manifest.permission.POST_NOTIFICATIONS
-        } else {
-            ""
-        }
+    @Composable
+    fun StartWithPermissionsCheck(activity: Activity) {
+        val readMediaPermission: String =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.READ_MEDIA_IMAGES
+            } else {
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            }
 
-    val permissionsToRequest = arrayOf(
-        readMediaPermission,
-        postNotificationPermission
-    ).filter { it.isNotBlank() }.toTypedArray()
+        val postNotificationPermission: String =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.POST_NOTIFICATIONS
+            } else {
+                ""
+            }
 
-    val context = LocalContext.current
+        val permissionsToRequest = arrayOf(
+            readMediaPermission,
+            postNotificationPermission
+        ).filter { it.isNotBlank() }.toTypedArray()
 
-    val viewModel = viewModel<MainViewModel>()
-    val dialogQueue by viewModel.visiblePermissionDialogQueue.observeAsState(emptyList())
+        val context = LocalContext.current
 
-    val multiplePermissionResultLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions(),
-        onResult = { perms ->
-            permissionsToRequest.forEach { permission ->
-                if (perms[permission] == true || perms[permission] == false) {
-                    viewModel.onPermissionResult(
-                        permission = permission,
-                        isGranted = perms[permission] == true
-                    )
+        val viewModel = viewModel<MainViewModel>()
+        val dialogQueue by viewModel.visiblePermissionDialogQueue.observeAsState(emptyList())
+
+        val multiplePermissionResultLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestMultiplePermissions(),
+            onResult = { perms ->
+                permissionsToRequest.forEach { permission ->
+                    if (perms[permission] == true || perms[permission] == false) {
+                        viewModel.onPermissionResult(
+                            permission = permission,
+                            isGranted = perms[permission] == true
+                        )
+                    }
                 }
             }
-        }
-    )
-
-    LaunchedEffect(Unit) {
-        multiplePermissionResultLauncher.launch(permissionsToRequest)
-    }
-
-    val arePermissionsGranted = checkPermissions(
-        context = context,
-        notificationPermission = postNotificationPermission,
-        mediaPermission = readMediaPermission
-    )
-
-    val lifecycle = LocalLifecycleOwner.current
-
-    val monitorPermissionsGrantedState = remember {
-        monitorWhetherPermissionsGranted(
-            mediaPermission = readMediaPermission,
-            notificationPermission = postNotificationPermission,
-            context = context,
-            lifecycle
         )
-    }
 
-    val monitorPermissionsGranted by monitorPermissionsGrantedState.collectAsStateWithLifecycle()
+        LaunchedEffect(Unit) {
+            multiplePermissionResultLauncher.launch(permissionsToRequest)
+        }
 
-    if (arePermissionsGranted) {
-        Navigation()
-    } else {
-        if (monitorPermissionsGranted) {
-            Navigation()
+        val arePermissionsGranted = checkPermissions(
+            context = context,
+            notificationPermission = postNotificationPermission,
+            mediaPermission = readMediaPermission
+        )
+
+        val lifecycle = LocalLifecycleOwner.current
+
+        val monitorPermissionsGrantedState = remember {
+            monitorWhetherPermissionsGranted(
+                mediaPermission = readMediaPermission,
+                notificationPermission = postNotificationPermission,
+                context = context,
+                lifecycle
+            )
+        }
+
+        val monitorPermissionsGranted by monitorPermissionsGrantedState.collectAsStateWithLifecycle()
+
+        if (arePermissionsGranted) {
+            Navigation(viewModelFactory)
         } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = stringResource(id = R.string.explanationOfTheImportanceOfPermission),
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.size(16.dp))
-
-                Button(onClick = {
-                    multiplePermissionResultLauncher.launch(permissionsToRequest)
-                }) {
-                    Text(text = stringResource(id = R.string.requestPermissions))
-                }
-            }
-
-            dialogQueue
-                .reversed()
-                .forEach { permission ->
-                    PermissionDialog(
-                        permissionTextProvider = when (permission) {
-                            Manifest.permission.POST_NOTIFICATIONS -> {
-                                NotificationPermissionTextProvider()
-                            }
-
-                            Manifest.permission.READ_MEDIA_IMAGES -> {
-                                ReadMediaImagesPermissionTextProvider()
-                            }
-
-                            Manifest.permission.READ_EXTERNAL_STORAGE -> {
-                                ReadExternalStoragePermissionTextProvider()
-                            }
-
-                            else -> return@forEach
-                        },
-                        isPermanentlyDeclined = !activity.shouldShowRequestPermissionRationale(
-                            permission
-                        ),
-                        onDismiss = viewModel::dismissDialog,
-                        onOkClick = {
-                            viewModel.dismissDialog()
-                            multiplePermissionResultLauncher.launch(
-                                arrayOf(permission)
-                            )
-                        },
-                        onGoToAppSettingsClick = {
-                            openAppSettings(activity = activity)
-                            viewModel.dismissDialog()
-                        }
+            if (monitorPermissionsGranted) {
+                Navigation(viewModelFactory)
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.explanationOfTheImportanceOfPermission),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
+                    Spacer(modifier = Modifier.size(16.dp))
+
+                    Button(onClick = {
+                        multiplePermissionResultLauncher.launch(permissionsToRequest)
+                    }) {
+                        Text(text = stringResource(id = R.string.requestPermissions))
+                    }
                 }
-        }
-    }
-}
 
-fun monitorWhetherPermissionsGranted(
-    mediaPermission: String,
-    notificationPermission: String,
-    context: Context,
-    lifecycle: LifecycleOwner
-): StateFlow<Boolean> {
-    val permissionsGrantedState = MutableStateFlow(false)
+                dialogQueue
+                    .reversed()
+                    .forEach { permission ->
+                        PermissionDialog(
+                            permissionTextProvider = when (permission) {
+                                Manifest.permission.POST_NOTIFICATIONS -> {
+                                    NotificationPermissionTextProvider()
+                                }
 
-    lifecycle.lifecycleScope.launch {
-        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            while (!permissionsGrantedState.value) {
-                permissionsGrantedState.value = checkPermissions(
-                    context = context,
-                    notificationPermission = notificationPermission,
-                    mediaPermission = mediaPermission
-                )
-                delay(2000) // check permissions every 2 sec
+                                Manifest.permission.READ_MEDIA_IMAGES -> {
+                                    ReadMediaImagesPermissionTextProvider()
+                                }
+
+                                Manifest.permission.READ_EXTERNAL_STORAGE -> {
+                                    ReadExternalStoragePermissionTextProvider()
+                                }
+
+                                else -> return@forEach
+                            },
+                            isPermanentlyDeclined = !activity.shouldShowRequestPermissionRationale(
+                                permission
+                            ),
+                            onDismiss = viewModel::dismissDialog,
+                            onOkClick = {
+                                viewModel.dismissDialog()
+                                multiplePermissionResultLauncher.launch(
+                                    arrayOf(permission)
+                                )
+                            },
+                            onGoToAppSettingsClick = {
+                                openAppSettings(activity = activity)
+                                viewModel.dismissDialog()
+                            }
+                        )
+                    }
             }
         }
     }
-    return permissionsGrantedState
-}
 
-fun checkPermissions(
-    context: Context,
-    notificationPermission: String,
-    mediaPermission: String
-): Boolean {
-    val isPostNotificationPermissionGranted =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ActivityCompat.checkSelfPermission(
-                context,
-                notificationPermission
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true // if SDK < 33, permission is granted by default
+    fun monitorWhetherPermissionsGranted(
+        mediaPermission: String,
+        notificationPermission: String,
+        context: Context,
+        lifecycle: LifecycleOwner
+    ): StateFlow<Boolean> {
+        val permissionsGrantedState = MutableStateFlow(false)
+
+        lifecycle.lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                while (!permissionsGrantedState.value) {
+                    permissionsGrantedState.value = checkPermissions(
+                        context = context,
+                        notificationPermission = notificationPermission,
+                        mediaPermission = mediaPermission
+                    )
+                    delay(2000) // check permissions every 2 sec
+                }
+            }
         }
+        return permissionsGrantedState
+    }
 
-    val isReadMediaPermissionGranted = ActivityCompat.checkSelfPermission(
-        context,
-        mediaPermission
-    ) == PackageManager.PERMISSION_GRANTED
+    fun checkPermissions(
+        context: Context,
+        notificationPermission: String,
+        mediaPermission: String
+    ): Boolean {
+        val isPostNotificationPermissionGranted =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ActivityCompat.checkSelfPermission(
+                    context,
+                    notificationPermission
+                ) == PackageManager.PERMISSION_GRANTED
+            } else {
+                true // if SDK < 33, permission is granted by default
+            }
 
-    return isPostNotificationPermissionGranted && isReadMediaPermissionGranted
-}
+        val isReadMediaPermissionGranted = ActivityCompat.checkSelfPermission(
+            context,
+            mediaPermission
+        ) == PackageManager.PERMISSION_GRANTED
 
-fun openAppSettings(activity: Activity) {
-    Intent(
-        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-        Uri.fromParts("package", activity.packageName, null)
-    ).also(activity::startActivity)
+        return isPostNotificationPermissionGranted && isReadMediaPermissionGranted
+    }
+
+    fun openAppSettings(activity: Activity) {
+        Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.fromParts("package", activity.packageName, null)
+        ).also(activity::startActivity)
+    }
+
 }
