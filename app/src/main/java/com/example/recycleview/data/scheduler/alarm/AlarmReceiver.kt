@@ -10,7 +10,7 @@ import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.recycleview.data.scheduler.alarm.AlarmSchedulerImpl.Companion.EXTRA_NOTIFICATION_ALARM_ITEM
-import com.example.recycleview.data.scheduler.notification.NotificationWorker
+import com.example.recycleview.data.scheduler.workers.NotificationWorker
 import com.example.recycleview.data.scheduler.notification.NotificationWorkerItem
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint

@@ -1,4 +1,4 @@
-package com.example.recycleview.data.scheduler.notification
+package com.example.recycleview.data.scheduler.workers
 
 import android.content.Context
 import android.util.Log
@@ -6,6 +6,8 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.recycleview.data.plant.PlantDao
+import com.example.recycleview.data.scheduler.notification.NotificationManager
+import com.example.recycleview.data.scheduler.notification.NotificationWorkerItem
 import com.example.recycleview.data.scheduler.utils.toNotificationItem
 import com.google.gson.Gson
 import dagger.assisted.Assisted
@@ -32,16 +34,16 @@ class NotificationWorker @AssistedInject constructor(
                 val plant =
                     plantDao.getSinglePlant(notificationWorkerItem.plantId)
 
-                    val notificationItem = plant.toNotificationItem(
-                        scheduleId = notificationWorkerItem.scheduleId,
-                        notificationMessage = notificationWorkerItem.message
-                    )
+                val notificationItem = plant.toNotificationItem(
+                    scheduleId = notificationWorkerItem.scheduleId,
+                    notificationMessage = notificationWorkerItem.message
+                )
 
-                    val plantWateringNotification = NotificationManager(context)
-                    plantWateringNotification.createNotificationChannels()
-                    plantWateringNotification.createNotification(notificationItem)
+                val plantWateringNotification = NotificationManager(context)
+                plantWateringNotification.createNotificationChannels()
+                plantWateringNotification.createNotification(notificationItem)
 
-                    Result.success()
+                Result.success()
             } catch (e: Exception) {
                 Log.e("NotificationWorker", "Error accessing database", e)
                 if (e is CancellationException) throw e

@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -85,6 +84,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.recycleview.R
 import com.example.recycleview.domain.models.Plant
@@ -229,6 +229,7 @@ fun HomeScreen(
                             )
                         }
                     }
+
                     plantList.itemCount == 0 -> {
                         Box(
                             modifier = modifier
@@ -264,9 +265,10 @@ fun HomeScreen(
                             }
                         }
                     }
+
                     else -> {
                         PlantGrid(
-                            plantList = plantList.itemSnapshotList.items,
+                            plantList = plantList,
                             navController = navController,
                             selectedIds = selectedItemsIds,
                         )
@@ -284,7 +286,7 @@ fun SearchAppBar(
     onInputValueChange: (String) -> Unit,
     text: String,
     onSearchClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
         modifier = modifier
@@ -356,7 +358,7 @@ fun HomeTopBar(
     isSortMenuVisible: Boolean,
     inSelectionMode: Boolean,
     onDeleteClicked: () -> Unit,
-    onCancelDeleteClicked: () -> Unit
+    onCancelDeleteClicked: () -> Unit,
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -443,7 +445,7 @@ fun HomeTopBar(
 @Composable
 private fun PlantGrid(
     modifier: Modifier = Modifier,
-    plantList: List<Plant>,
+    plantList: LazyPagingItems<Plant>,
     navController: NavHostController,
     selectedIds: MutableState<Set<String>>,
 ) {
@@ -474,7 +476,11 @@ private fun PlantGrid(
                 autoScrollThreshold = with(LocalDensity.current) { 40.dp.toPx() },
             )
     ) {
-        items(plantList, key = { it.id }) { plant ->
+        items(
+            count = plantList.itemCount,
+            key = { index -> plantList[index]?.id ?: 0 }) { index ->
+
+            val plant = plantList[index] ?: return@items
             val selected by remember { derivedStateOf { selectedIds.value.contains(plant.id) } }
 
             PlantItem(
