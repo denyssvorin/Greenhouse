@@ -1,4 +1,4 @@
-package com.example.recycleview.presentation.home
+package com.example.recycleview.presentation.home.components
 
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition

@@ -49,6 +49,5 @@ class OneTimeAlarmWorker @AssistedInject constructor(
 
     companion object {
         const val ALARM_DATA_KEY = "ALARM_DATA_KEY"
-        const val NOTIFICATION_ITEM_KEY = "NOTIFICATION_ITEM_KEY"
     }
 }
