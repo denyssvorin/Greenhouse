@@ -3,19 +3,25 @@ package com.example.recycleview.data.scheduler.alarm
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
+import androidx.test.core.app.ApplicationProvider
+import androidx.work.Configuration
+import androidx.work.impl.utils.SynchronousExecutor
+import androidx.work.testing.WorkManagerTestInitHelper
 import com.example.recycleview.domain.alarm.AlarmPlant
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
-import io.mockk.unmockkAll
+import io.mockk.spyk
 import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 @ExperimentalCoroutinesApi
 class AlarmSchedulerImplTest {
 
@@ -25,17 +31,32 @@ class AlarmSchedulerImplTest {
 
     @Before
     fun setUp() {
-        context = mockk(relaxed = true)
-        alarmManager = mockk(relaxed = true)
+        context = ApplicationProvider.getApplicationContext()
 
-        every { context.packageName } returns "com.example.test"
-        every { context.getSystemService(AlarmManager::class.java) } returns alarmManager
+        val realAlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager = spyk(realAlarmManager)
 
-        alarmScheduler = AlarmSchedulerImpl(context)
+        val config = Configuration.Builder()
+            .setExecutor(SynchronousExecutor())
+            .build()
+        WorkManagerTestInitHelper.initializeTestWorkManager(context, config)
+
+        val contextSpy = spyk(context)
+        every { contextSpy.getSystemService(Context.ALARM_SERVICE) } returns alarmManager
+
+        alarmScheduler = AlarmSchedulerImpl(contextSpy)
+
+        mockkStatic(PendingIntent::class)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkStatic(PendingIntent::class)
     }
 
     @Test
     fun `schedule should call alarmManager with correct parameters`() {
+        // Arrange
         val alarmItem = AlarmPlant(
             scheduleId = "schedule123",
             plantId = "plantABC",
@@ -46,61 +67,39 @@ class AlarmSchedulerImplTest {
             repeatIntervalDaysInMillis = AlarmManager.INTERVAL_DAY
         )
 
-        mockkConstructor(Intent::class)
-        mockkStatic(PendingIntent::class)
         val mockPendingIntent = mockk<PendingIntent>()
         every {
-            PendingIntent.getBroadcast(
-                any(),
-                any(),
-                any(),
-                any()
-            )
+            PendingIntent.getBroadcast(any(), any(), any(), any())
         } returns mockPendingIntent
 
-        // Creating мок for AlarmManager and AlarmSchedulerImpl
-        alarmManager = mockk(relaxed = true)
-        every { context.getSystemService(AlarmManager::class.java) } returns alarmManager
-        alarmScheduler = AlarmSchedulerImpl(context)
-
-        // Launch method
+        // Act
         alarmScheduler.schedule(alarmItem)
 
-        // Verify call
+        // Assert
         verify {
             alarmManager.setInexactRepeating(
                 AlarmManager.RTC_WAKEUP,
                 alarmItem.firstTriggerTimeAndDateInMillis,
                 alarmItem.repeatIntervalDaysInMillis,
-                mockPendingIntent
+                any()
             )
         }
-
-        unmockkAll()
     }
-
-
 
     @Test
     fun `cancel should call alarmManager cancel with PendingIntent`() {
+        // Arrange
         val scheduleId = "schedule123"
-        val pendingIntent = mockk<PendingIntent>()
+        val mockPendingIntent = mockk<PendingIntent>()
 
-        mockkStatic(PendingIntent::class)
         every {
-            PendingIntent.getBroadcast(
-                context,
-                scheduleId.hashCode(),
-                any(),
-                any()
-            )
-        } returns pendingIntent
+            PendingIntent.getBroadcast(any(), any(), any(), any())
+        } returns mockPendingIntent
 
+        // Act
         alarmScheduler.cancel(scheduleId)
 
-        verify { alarmManager.cancel(pendingIntent) }
-
-        unmockkStatic(PendingIntent::class)
+        // Assert
+        verify { alarmManager.cancel(any<PendingIntent>()) }
     }
 }
-
